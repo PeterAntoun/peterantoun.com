@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import ThemeToggle from './ThemeToggle';
 
 const LINKS = [
   { id: 'about', label: 'About' },
@@ -49,14 +50,14 @@ export default function Navbar() {
       transition={{ duration: 0.5, ease: 'easeOut' }}
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
         scrolled
-          ? 'border-b border-white/5 bg-ink-950/80 backdrop-blur-md'
+          ? 'border-b border-line/10 bg-bg/80 backdrop-blur-md'
           : 'border-b border-transparent'
       }`}
     >
       <nav className="container-px flex h-16 items-center justify-between">
         <a
           href="#hero"
-          className="group flex items-center gap-2 text-sm font-semibold text-white"
+          className="group flex items-center gap-2 text-sm font-semibold text-fg"
         >
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent/15 text-accent ring-1 ring-accent/30">
             PA
@@ -71,8 +72,8 @@ export default function Navbar() {
                 href={`#${link.id}`}
                 className={`relative rounded-md px-3 py-2 text-sm transition-colors ${
                   active === link.id
-                    ? 'text-white'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'text-fg'
+                    : 'text-muted hover:text-fg'
                 }`}
               >
                 {link.label}
@@ -88,7 +89,8 @@ export default function Navbar() {
           ))}
         </ul>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-2 md:flex">
+          <ThemeToggle />
           <a
             href="#contact"
             className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
@@ -97,14 +99,16 @@ export default function Navbar() {
           </a>
         </div>
 
-        {/* Mobile menu toggle */}
-        <button
-          type="button"
-          aria-label="Toggle menu"
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((v) => !v)}
-          className="grid h-9 w-9 place-items-center rounded-lg border border-white/10 text-white md:hidden"
-        >
+        {/* Mobile controls */}
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <button
+            type="button"
+            aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((v) => !v)}
+            className="grid h-9 w-9 place-items-center rounded-lg border border-line/15 text-fg"
+          >
           <span className="sr-only">Menu</span>
           <div className="space-y-1.5">
             <span
@@ -123,7 +127,8 @@ export default function Navbar() {
               }`}
             />
           </div>
-        </button>
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}
@@ -132,7 +137,7 @@ export default function Navbar() {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          className="container-px space-y-1 overflow-hidden border-t border-white/5 bg-ink-950/95 pb-4 pt-2 backdrop-blur-md md:hidden"
+          className="container-px space-y-1 overflow-hidden border-t border-line/10 bg-bg/95 pb-4 pt-2 backdrop-blur-md md:hidden"
         >
           {LINKS.map((link) => (
             <li key={link.id}>
@@ -141,8 +146,8 @@ export default function Navbar() {
                 onClick={() => setMenuOpen(false)}
                 className={`block rounded-md px-3 py-2.5 text-sm ${
                   active === link.id
-                    ? 'bg-white/5 text-white'
-                    : 'text-slate-400'
+                    ? 'bg-fg/5 text-fg'
+                    : 'text-muted'
                 }`}
               >
                 {link.label}

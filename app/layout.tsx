@@ -69,10 +69,17 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#08090c',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#fafafc' },
+    { media: '(prefers-color-scheme: dark)', color: '#08090c' },
+  ],
   width: 'device-width',
   initialScale: 1,
 };
+
+// Runs before paint to set the theme class, avoiding a light/dark flash.
+// Precedence: explicit saved choice → OS preference → dark.
+const themeInit = `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&(t==='dark'||window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`;
 
 export default function RootLayout({
   children,
@@ -80,7 +87,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+      </head>
       <body>{children}</body>
     </html>
   );

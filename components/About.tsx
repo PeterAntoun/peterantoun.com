@@ -37,21 +37,21 @@ export default function About() {
 
         <div className="mt-10 grid gap-12 lg:grid-cols-[1.2fr_1fr]">
           {/* Bio */}
-          <motion.div variants={fadeUp} className="space-y-4 text-slate-400">
+          <motion.div variants={fadeUp} className="space-y-4 text-muted">
             <p>
               I&apos;m finishing a{' '}
-              <span className="text-slate-200">Double Diplôme</span> — a BBA in
+              <span className="text-fg">Double Diplôme</span> — a BBA in
               Data, AI &amp; Management from{' '}
-              <span className="text-slate-200">Audencia Business School</span>{' '}
-              and <span className="text-slate-200">École Centrale de Nantes</span>
+              <span className="text-fg">Audencia Business School</span>{' '}
+              and <span className="text-fg">École Centrale de Nantes</span>
               , graduating September 2026.
             </p>
             <p>
               Right now I&apos;m at{' '}
-              <span className="text-slate-200">Monoprix in Paris</span> on the
+              <span className="text-fg">Monoprix in Paris</span> on the
               Digital Marketing team, where I build analytics pipelines, campaign
               measurement tools, workflow automations, and{' '}
-              <span className="text-slate-200">NL→SQL agents on Snowflake</span>.
+              <span className="text-fg">NL→SQL agents on Snowflake</span>.
             </p>
             <p>
               Outside of work I build AI agents, deploy bots on VPS, and run side
@@ -61,16 +61,16 @@ export default function About() {
 
             {/* Languages */}
             <div className="!mt-8">
-              <h3 className="mb-3 text-sm font-medium text-slate-300">
+              <h3 className="mb-3 text-sm font-medium text-muted">
                 Languages
               </h3>
               <div className="flex flex-wrap gap-3">
                 {LANGUAGES.map((lang) => (
                   <div
                     key={lang.name}
-                    className="flex items-baseline gap-2 rounded-lg border border-white/5 bg-ink-850/60 px-4 py-2"
+                    className="flex items-baseline gap-2 rounded-lg border border-line/10 bg-surface/70 px-4 py-2"
                   >
-                    <span className="text-sm font-medium text-white">
+                    <span className="text-sm font-medium text-fg">
                       {lang.name}
                     </span>
                     <span className="text-xs text-accent-cyan">
@@ -84,7 +84,7 @@ export default function About() {
 
           {/* Skills grid */}
           <motion.div variants={fadeUp}>
-            <h3 className="mb-4 text-sm font-medium text-slate-300">
+            <h3 className="mb-4 text-sm font-medium text-muted">
               What I work with
             </h3>
             <motion.ul
@@ -99,7 +99,7 @@ export default function About() {
                   className="card group flex items-center gap-3 px-4 py-3 hover:border-accent/30"
                 >
                   <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent transition-transform group-hover:scale-150" />
-                  <span className="text-sm text-slate-200">{skill}</span>
+                  <span className="text-sm text-fg">{skill}</span>
                 </motion.li>
               ))}
             </motion.ul>

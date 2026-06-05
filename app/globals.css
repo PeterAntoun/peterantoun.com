@@ -2,8 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Semantic color tokens, expressed as space-separated RGB channels so Tailwind
+ * can apply alpha (e.g. `text-fg/70`). Light is the default; `.dark` on <html>
+ * swaps the palette. The accent (blue/cyan) stays constant across both themes.
+ */
 :root {
+  color-scheme: light;
+  --bg: 250 250 252; /* page background */
+  --surface: 255 255 255; /* cards / raised panels */
+  --surface-2: 241 245 249; /* subtle fills, inputs */
+  --fg: 15 23 42; /* primary text (slate-900) */
+  --muted: 71 85 105; /* secondary text (slate-600) */
+  --subtle: 100 116 139; /* tertiary text (slate-500) */
+  --line: 15 23 42; /* borders — used at low alpha */
+}
+
+.dark {
   color-scheme: dark;
+  --bg: 8 9 12;
+  --surface: 15 18 24;
+  --surface-2: 19 22 29;
+  --fg: 255 255 255;
+  --muted: 148 163 184; /* slate-400 */
+  --subtle: 100 116 139; /* slate-500 */
+  --line: 255 255 255; /* borders — used at low alpha */
 }
 
 html {
@@ -13,7 +36,7 @@ html {
 }
 
 body {
-  @apply bg-ink-950 text-slate-300 antialiased;
+  @apply bg-bg text-muted antialiased;
   background-image: radial-gradient(
       60rem 60rem at 80% -10%,
       rgba(59, 130, 246, 0.08),
@@ -25,21 +48,23 @@ body {
       transparent 55%
     );
   background-attachment: fixed;
+  /* Smooth the moment the theme flips. */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Thin, theme-aware scrollbar. */
+/* Thin, theme-aware scrollbar driven by the same tokens. */
 ::-webkit-scrollbar {
   width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #08090c;
+  background: rgb(var(--bg));
 }
 ::-webkit-scrollbar-thumb {
-  background: #1c2029;
+  background: rgb(var(--line) / 0.2);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2a2f3a;
+  background: rgb(var(--line) / 0.35);
 }
 
 @layer components {
@@ -52,11 +77,11 @@ body {
   }
 
   .heading {
-    @apply text-3xl font-semibold tracking-tight text-white sm:text-4xl;
+    @apply text-3xl font-semibold tracking-tight text-fg sm:text-4xl;
   }
 
   .card {
-    @apply rounded-2xl border border-white/5 bg-ink-850/60 backdrop-blur transition-colors duration-300;
+    @apply rounded-2xl border border-line/10 bg-surface/70 backdrop-blur transition-colors duration-300;
   }
 
   .glow-ring {

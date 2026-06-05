@@ -2,8 +2,8 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-white/5 py-10">
-      <div className="container-px flex flex-col items-center justify-between gap-4 text-sm text-slate-500 sm:flex-row">
+    <footer className="border-t border-line/10 py-10">
+      <div className="container-px flex flex-col items-center justify-between gap-4 text-sm text-subtle sm:flex-row">
         <p>
           © {year} Peter Antoun
         </p>
@@ -13,7 +13,7 @@ export default function Footer() {
           <span aria-hidden>·</span>
           <a
             href="#hero"
-            className="transition-colors hover:text-white"
+            className="transition-colors hover:text-fg"
           >
             Back to top ↑
           </a>

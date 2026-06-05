@@ -13,7 +13,51 @@ type ContactPayload = {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const MAX_NAME = 100;
+const MAX_EMAIL = 254;
+const MAX_MESSAGE = 5000;
+
+/*
+ * Best-effort, per-instance rate limiting. Serverless instances are ephemeral
+ * and not shared across regions, so this throttles bursts against a single warm
+ * instance rather than guaranteeing a global limit. For a hard guarantee, back
+ * this with Upstash/Vercel KV (noted in the README).
+ */
+const RATE_LIMIT = 5;
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const hits = new Map<string, { count: number; resetAt: number }>();
+
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+
+  // Opportunistically prune expired entries so the map can't grow unbounded.
+  if (hits.size > 5000) {
+    hits.forEach((entry, key) => {
+      if (now > entry.resetAt) hits.delete(key);
+    });
+  }
+
+  const entry = hits.get(ip);
+  if (!entry || now > entry.resetAt) {
+    hits.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > RATE_LIMIT;
+}
+
 export async function POST(request: Request) {
+  // First forwarded hop is the client IP on Vercel; fall back to a constant.
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+
+  if (rateLimited(ip)) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429 },
+    );
+  }
+
   let body: ContactPayload;
 
   try {
@@ -41,6 +85,13 @@ export async function POST(request: Request) {
     );
   }
 
+  if (name.length > MAX_NAME || email.length > MAX_EMAIL) {
+    return NextResponse.json(
+      { error: 'Name or email is too long.' },
+      { status: 400 },
+    );
+  }
+
   if (!EMAIL_RE.test(email)) {
     return NextResponse.json(
       { error: 'Please enter a valid email address.' },
@@ -48,7 +99,7 @@ export async function POST(request: Request) {
     );
   }
 
-  if (message.length > 5000) {
+  if (message.length > MAX_MESSAGE) {
     return NextResponse.json(
       { error: 'Message is too long.' },
       { status: 400 },
@@ -70,12 +121,17 @@ export async function POST(request: Request) {
 
   const resend = new Resend(apiKey);
 
+  // The subject is an email header — collapse any CR/LF so a crafted name can't
+  // inject extra headers. (The email regex already blocks whitespace, so
+  // `reply_to` is safe to pass through.)
+  const safeSubjectName = name.replace(/[\r\n]+/g, ' ');
+
   try {
     const { error } = await resend.emails.send({
       from: fromEmail,
       to: [toEmail],
       reply_to: email,
-      subject: `New message from ${name} · peterantoun.com`,
+      subject: `New message from ${safeSubjectName} · peterantoun.com`,
       text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
       html: `
         <div style="font-family: ui-sans-serif, system-ui, sans-serif; color: #0b0d12;">

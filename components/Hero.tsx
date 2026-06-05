@@ -19,7 +19,7 @@ export default function Hero() {
       >
         <motion.p
           variants={fadeUp}
-          className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300"
+          className="mb-5 inline-flex items-center gap-2 rounded-full border border-line/15 bg-fg/5 px-3 py-1 text-xs text-muted"
         >
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-cyan opacity-75" />
@@ -30,7 +30,7 @@ export default function Hero() {
 
         <motion.h1
           variants={fadeUp}
-          className="max-w-4xl text-4xl font-semibold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl"
+          className="max-w-4xl text-4xl font-semibold leading-[1.05] tracking-tight text-fg sm:text-6xl lg:text-7xl"
         >
           I build things with{' '}
           <span className="bg-gradient-to-r from-accent via-accent-cyan to-accent bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-pan">
@@ -41,7 +41,7 @@ export default function Hero() {
 
         <motion.p
           variants={fadeUp}
-          className="mt-6 max-w-xl text-base text-slate-400 sm:text-lg"
+          className="mt-6 max-w-xl text-base text-muted sm:text-lg"
         >
           I&apos;m Peter Antoun — friends call me Baba. A Data &amp; AI student
           and builder based in Paris, shipping analytics pipelines, AI agents,
@@ -74,7 +74,7 @@ export default function Hero() {
           <a
             href="/cv.pdf"
             download
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-white transition-colors hover:border-white/20 hover:bg-white/10"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-line/15 bg-fg/5 px-6 py-3 text-sm font-medium text-fg transition-colors hover:border-line/25 hover:bg-fg/10"
           >
             Download CV
             <svg
@@ -95,7 +95,7 @@ export default function Hero() {
 
         <motion.div
           variants={fadeUp}
-          className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500"
+          className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-subtle"
         >
           <span>📍 Paris, France</span>
           <span>🇱🇧 Lebanese</span>
@@ -105,7 +105,7 @@ export default function Hero() {
 
       {/* Scroll cue */}
       <div className="absolute bottom-8 left-1/2 z-10 hidden -translate-x-1/2 sm:block">
-        <div className="flex h-9 w-5 items-start justify-center rounded-full border border-white/15 p-1">
+        <div className="flex h-9 w-5 items-start justify-center rounded-full border border-line/20 p-1">
           <span className="h-2 w-1 animate-float rounded-full bg-accent-cyan" />
         </div>
       </div>

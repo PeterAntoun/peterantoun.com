@@ -27,7 +27,7 @@ export default function Stack() {
   return (
     <section
       id="stack"
-      className="scroll-mt-20 border-t border-white/5 py-24 sm:py-32"
+      className="scroll-mt-20 border-t border-line/10 py-24 sm:py-32"
     >
       <motion.div
         variants={staggerContainer}
@@ -40,7 +40,7 @@ export default function Stack() {
         <motion.h2 variants={fadeUp} className="heading max-w-2xl">
           Tools I reach for daily.
         </motion.h2>
-        <motion.p variants={fadeUp} className="mt-3 max-w-xl text-slate-400">
+        <motion.p variants={fadeUp} className="mt-3 max-w-xl text-muted">
           The kit behind the pipelines, agents, and apps.
         </motion.p>
 
@@ -57,12 +57,12 @@ export default function Stack() {
               transition={{ type: 'spring', stiffness: 300, damping: 22 }}
               className="card group flex flex-col items-center gap-3 px-4 py-6 text-center hover:border-accent/30"
             >
-              <span className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-accent/20 to-accent-cyan/10 text-sm font-semibold text-accent ring-1 ring-white/5 transition-transform group-hover:scale-110">
+              <span className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-accent/20 to-accent-cyan/10 text-sm font-semibold text-accent ring-1 ring-line/10 transition-transform group-hover:scale-110">
                 {tool.mark}
               </span>
               <div>
-                <p className="text-sm font-medium text-white">{tool.name}</p>
-                <p className="text-xs text-slate-500">{tool.category}</p>
+                <p className="text-sm font-medium text-fg">{tool.name}</p>
+                <p className="text-xs text-subtle">{tool.category}</p>
               </div>
             </motion.div>
           ))}
