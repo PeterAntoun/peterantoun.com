@@ -67,7 +67,7 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="scroll-mt-20 border-t border-white/5 py-24 sm:py-32"
+      className="scroll-mt-20 border-t border-line/10 py-24 sm:py-32"
     >
       <motion.div
         variants={staggerContainer}
@@ -80,7 +80,7 @@ export default function Contact() {
         <motion.h2 variants={fadeUp} className="heading max-w-2xl">
           Let&apos;s build something.
         </motion.h2>
-        <motion.p variants={fadeUp} className="mt-3 max-w-xl text-slate-400">
+        <motion.p variants={fadeUp} className="mt-3 max-w-xl text-muted">
           Got a project, a role, or just want to talk data and AI? Drop me a
           line — I read everything.
         </motion.p>
@@ -99,10 +99,10 @@ export default function Contact() {
                 className="card group flex items-center justify-between px-5 py-4 hover:border-accent/30"
               >
                 <div>
-                  <p className="text-xs uppercase tracking-wider text-slate-500">
+                  <p className="text-xs uppercase tracking-wider text-subtle">
                     {s.label}
                   </p>
-                  <p className="mt-0.5 text-sm font-medium text-white">
+                  <p className="mt-0.5 text-sm font-medium text-fg">
                     {s.value}
                   </p>
                 </div>
@@ -116,7 +116,7 @@ export default function Contact() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   aria-hidden
-                  className="text-slate-500 transition-all group-hover:translate-x-0.5 group-hover:text-accent-cyan"
+                  className="text-subtle transition-all group-hover:translate-x-0.5 group-hover:text-accent-cyan"
                 >
                   <path d="M7 17 17 7M9 7h8v8" />
                 </svg>
@@ -207,7 +207,7 @@ export default function Contact() {
 }
 
 const inputClass =
-  'w-full rounded-lg border border-white/10 bg-ink-950/60 px-4 py-2.5 text-sm text-white placeholder:text-slate-600 outline-none transition-colors focus:border-accent/50 focus:ring-2 focus:ring-accent/20';
+  'w-full rounded-lg border border-line/15 bg-surface-2 px-4 py-2.5 text-sm text-fg placeholder:text-subtle outline-none transition-colors focus:border-accent/50 focus:ring-2 focus:ring-accent/20';
 
 function Field({
   label,
@@ -222,7 +222,7 @@ function Field({
     <div>
       <label
         htmlFor={htmlFor}
-        className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-slate-400"
+        className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-muted"
       >
         {label}
       </label>

@@ -61,7 +61,7 @@ export default function Projects() {
   return (
     <section
       id="projects"
-      className="scroll-mt-20 border-t border-white/5 py-24 sm:py-32"
+      className="scroll-mt-20 border-t border-line/10 py-24 sm:py-32"
     >
       <motion.div
         variants={staggerContainer}
@@ -76,7 +76,7 @@ export default function Projects() {
         </motion.h2>
         <motion.p
           variants={fadeUp}
-          className="mt-3 max-w-xl text-slate-400"
+          className="mt-3 max-w-xl text-muted"
         >
           A mix of work, side projects, and experiments — from production
           analytics to autonomous agents.
@@ -117,10 +117,10 @@ function ProjectCard({ project }: { project: Project }) {
         </span>
       )}
 
-      <h3 className="pr-16 text-lg font-semibold text-white">
+      <h3 className="pr-16 text-lg font-semibold text-fg">
         {project.title}
       </h3>
-      <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-400">
+      <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">
         {project.description}
       </p>
 
@@ -128,7 +128,7 @@ function ProjectCard({ project }: { project: Project }) {
         {project.tags.map((tag) => (
           <span
             key={tag}
-            className="rounded-md border border-white/5 bg-white/[0.03] px-2.5 py-1 text-xs text-slate-400"
+            className="rounded-md border border-line/10 bg-fg/[0.03] px-2.5 py-1 text-xs text-muted"
           >
             {tag}
           </span>
