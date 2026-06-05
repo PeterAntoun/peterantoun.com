@@ -1,35 +1,46 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 type Theme = 'light' | 'dark';
 
-/**
- * Light/dark switch. The initial class is set by the inline script in the
- * layout (before paint), so here we just read the live state on mount and
- * keep <html>, localStorage, and the icon in sync from then on.
- */
+// The DOM (`.dark` on <html>) is the source of truth. useSyncExternalStore lets
+// us read it during hydration without a setState-in-effect or a flash, and React
+// reconciles the server/client snapshots for us.
+function subscribe(callback: () => void) {
+  window.addEventListener('themechange', callback);
+  window.addEventListener('storage', callback);
+  return () => {
+    window.removeEventListener('themechange', callback);
+    window.removeEventListener('storage', callback);
+  };
+}
+
+function getSnapshot(): Theme {
+  return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+}
+
+// Matches the inline init script's fallback so the first paint is consistent.
+function getServerSnapshot(): Theme {
+  return 'dark';
+}
+
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>('dark');
-  const [mounted, setMounted] = useState(false);
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const isDark = theme === 'dark';
 
-  useEffect(() => {
-    setTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-    setMounted(true);
-  }, []);
-
-  function toggle() {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark';
+  const toggle = useCallback(() => {
+    const next: Theme = document.documentElement.classList.contains('dark')
+      ? 'light'
+      : 'dark';
     document.documentElement.classList.toggle('dark', next === 'dark');
     try {
       localStorage.setItem('theme', next);
     } catch {
-      /* storage may be unavailable (private mode) — fall back to in-memory */
+      /* storage may be unavailable (private mode) — DOM class still applies */
     }
-    setTheme(next);
-  }
-
-  const isDark = theme === 'dark';
+    window.dispatchEvent(new Event('themechange'));
+  }, []);
 
   return (
     <button
@@ -39,10 +50,7 @@ export default function ThemeToggle() {
       title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
       className="grid h-9 w-9 place-items-center rounded-lg border border-line/15 text-fg transition-colors hover:bg-fg/5"
     >
-      {/* Avoid an icon mismatch until we've read the real theme on the client. */}
-      <span className={mounted ? '' : 'opacity-0'} aria-hidden>
-        {isDark ? <SunIcon /> : <MoonIcon />}
-      </span>
+      <span aria-hidden>{isDark ? <SunIcon /> : <MoonIcon />}</span>
     </button>
   );
 }
