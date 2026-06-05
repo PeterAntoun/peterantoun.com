@@ -2,7 +2,7 @@
 
 Personal portfolio for **Peter Antoun** — Data & AI student and builder based in Paris.
 
-Built with **Next.js 14** (App Router), **Tailwind CSS**, **Framer Motion**, and **TypeScript**. Light/dark themes, mobile-first, fully responsive.
+Built with **Next.js 16** (App Router, Turbopack), **Tailwind CSS**, **Framer Motion**, and **TypeScript**. Light/dark themes, mobile-first, fully responsive.
 
 ## Sections
 
