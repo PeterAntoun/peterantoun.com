@@ -226,8 +226,7 @@ img { max-width: 100%; display: block; }
 
 .p-top { display: flex; align-items: center; justify-content: space-between; }
 .p-num { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; color: var(--faint); }
-.p-arrow { font-size: 22px; transition: transform .35s, color .35s; font-variant-emoji: text; }
-.arr, .ar, .w-go { font-variant-emoji: text; }
+.p-arrow { display: flex; transition: transform .35s, color .35s; }
 .pillar:hover .p-arrow { transform: translate(4px,-4px); }
 .p-title { font-size: clamp(28px, 3vw, 40px); font-weight: 800; letter-spacing: -.02em; margin: 28px 0 14px; line-height: 1; }
 .p-desc { color: var(--mid); font-size: 15px; line-height: 1.55; flex: 1; max-width: 30ch; }
@@ -259,7 +258,7 @@ img { max-width: 100%; display: block; }
 .work-row:hover .kind { color: color-mix(in srgb, var(--accent-ink) 70%, transparent); }
 .w-cat { color: var(--mid); font-size: 14px; transition: color .4s; white-space: nowrap; }
 .w-year { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); transition: color .4s; }
-.w-go { font-size: 26px; transition: transform .4s; }
+.w-go { display: flex; transition: transform .4s; }
 .work-row:hover .w-go { transform: translate(6px,-6px); }
 
 /* ---------- education ---------- */

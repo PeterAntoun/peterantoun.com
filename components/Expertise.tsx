@@ -45,7 +45,9 @@ export default function Expertise() {
             >
               <div className="p-top">
                 <span className="p-num">{p.num}</span>
-                <span className="p-arrow">{'↗︎'}</span>
+                <span className="p-arrow">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+                </span>
               </div>
               <h3 className="p-title">{p.title}</h3>
               <p className="p-desc">{p.desc}</p>

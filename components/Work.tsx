@@ -29,7 +29,7 @@ export default function Work() {
               </span>
               <span className="w-cat">{item.cat}</span>
               <span className="w-year">{item.year}</span>
-              <span className="w-go">{'↗︎'}</span>
+              <span className="w-go"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
             </a>
           ))}
         </div>
