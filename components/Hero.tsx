@@ -17,10 +17,6 @@ export default function Hero() {
             I help scale brands with <em>data-driven</em> strategies.
           </p>
           <div className="hero-meta" data-reveal data-delay="2">
-            <span className="availability">
-              <span className="pulse" />
-              Open to new roles · 2026
-            </span>
             <div className="hero-cta">
               <a href="#contact" className="btn">
                 Hire me <span className="arr">↗</span>
@@ -29,6 +25,10 @@ export default function Hero() {
                 See the work
               </a>
             </div>
+            <span className="availability">
+              <span className="pulse" />
+              Open to new roles · 2026
+            </span>
           </div>
         </div>
       </div>
