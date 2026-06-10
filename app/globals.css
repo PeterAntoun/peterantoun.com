@@ -16,8 +16,8 @@
   --accent:    #1f9d57;
   --accent-ink:#ffffff;
 
-  --display: "Bricolage Grotesque", "Arial Narrow", sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --display: var(--font-display), "Bricolage Grotesque", "Arial Narrow", sans-serif;
+  --mono: var(--font-mono), "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
   --maxw: 1320px;
   --gut: clamp(20px, 5vw, 72px);
@@ -37,7 +37,12 @@
 }
 
 * { box-sizing: border-box; }
-html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-optical-sizing: auto;
+}
 body {
   margin: 0;
   background: var(--bg);
