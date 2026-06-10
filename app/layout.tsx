@@ -1,20 +1,5 @@
 import type { Metadata } from 'next';
-import { Bricolage_Grotesque, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
-
-const bricolage = Bricolage_Grotesque({
-  subsets: ['latin'],
-  axes: ['opsz'],
-  variable: '--font-display',
-  display: 'swap',
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-mono',
-  display: 'swap',
-});
 
 const siteUrl = 'https://peterantoun.com';
 
@@ -52,9 +37,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+          rel="stylesheet"
+        />
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
       </head>
-      <body className={`${bricolage.variable} ${jetbrainsMono.variable}`}>
+      <body>
         {children}
       </body>
     </html>

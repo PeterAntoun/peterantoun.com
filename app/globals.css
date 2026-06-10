@@ -16,8 +16,8 @@
   --accent:    #1f9d57;
   --accent-ink:#ffffff;
 
-  --display: var(--font-display), "Arial Narrow", sans-serif;
-  --mono: var(--font-mono), ui-monospace, "SFMono-Regular", monospace;
+  --display: "Bricolage Grotesque", "Arial Narrow", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
   --maxw: 1320px;
   --gut: clamp(20px, 5vw, 72px);
