@@ -141,7 +141,7 @@ img { max-width: 100%; display: block; }
 .btn:hover { transform: translateY(-2px); background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .btn .arr { transition: transform .3s; }
 .btn:hover .arr { transform: translate(3px,-3px); }
-.btn.ghost { background: transparent; color: var(--ink); }
+.btn.ghost { background: var(--bg); color: var(--ink); }
 .btn.ghost:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 
 /* ---------- hero ---------- */
