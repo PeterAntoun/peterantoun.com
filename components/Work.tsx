@@ -29,7 +29,7 @@ export default function Work() {
               </span>
               <span className="w-cat">{item.cat}</span>
               <span className="w-year">{item.year}</span>
-              <span className="w-go">↗</span>
+              <span className="w-go">{'↗︎'}</span>
             </a>
           ))}
         </div>

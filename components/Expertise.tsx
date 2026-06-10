@@ -45,7 +45,7 @@ export default function Expertise() {
             >
               <div className="p-top">
                 <span className="p-num">{p.num}</span>
-                <span className="p-arrow">↗</span>
+                <span className="p-arrow">{'↗︎'}</span>
               </div>
               <h3 className="p-title">{p.title}</h3>
               <p className="p-desc">{p.desc}</p>

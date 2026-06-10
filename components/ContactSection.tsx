@@ -17,7 +17,7 @@ export default function ContactSection() {
                 </p>
                 <div className="ct-actions">
                   <a href="mailto:antounpeter@gmail.com" className="btn">
-                    antounpeter@gmail.com <span className="arr">↗</span>
+                    antounpeter@gmail.com <span className="arr">{'↗︎'}</span>
                   </a>
                 </div>
               </div>
@@ -28,13 +28,13 @@ export default function ContactSection() {
                 </div>
                 <div className="ct-links">
                   <a href="https://www.linkedin.com/in/peterantoun" target="_blank" rel="noreferrer noopener">
-                    <span>LinkedIn</span><span className="ar">↗</span>
+                    <span>LinkedIn</span><span className="ar">{'↗︎'}</span>
                   </a>
                   <a href="https://github.com/peterantoun" target="_blank" rel="noreferrer noopener">
-                    <span>GitHub</span><span className="ar">↗</span>
+                    <span>GitHub</span><span className="ar">{'↗︎'}</span>
                   </a>
                   <a href="#">
-                    <span>Twitter / X</span><span className="ar">↗</span>
+                    <span>Twitter / X</span><span className="ar">{'↗︎'}</span>
                   </a>
                 </div>
               </div>
