@@ -1,23 +1,27 @@
-import Navbar from '@/components/Navbar';
+import Topbar from '@/components/Topbar';
 import Hero from '@/components/Hero';
-import About from '@/components/About';
-import Projects from '@/components/Projects';
-import Stack from '@/components/Stack';
-import Contact from '@/components/Contact';
+import Expertise from '@/components/Expertise';
+import Education from '@/components/Education';
+import Work from '@/components/Work';
+import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
+import ThemeToggle from '@/components/ThemeToggle';
+import Animations from '@/components/Animations';
 
 export default function Home() {
   return (
     <>
-      <Navbar />
-      <main>
+      <Topbar />
+      <main id="top">
         <Hero />
-        <About />
-        <Projects />
-        <Stack />
-        <Contact />
+        <Expertise />
+        <Education />
+        <Work />
+        <ContactSection />
       </main>
       <Footer />
+      <ThemeToggle />
+      <Animations />
     </>
   );
 }

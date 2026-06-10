@@ -25,7 +25,7 @@ const PROJECTS: Project[] = [
   {
     title: 'AI Agent Infrastructure',
     description:
-      'A self-hosted agent stack — Hermes Agent deployed on a VPS, wired up with OpenClaw, MiniMax-M2, and Brave Search for autonomous research and task execution.',
+      'A self-hosted agent stack: Hermes Agent deployed on a VPS, wired up with OpenClaw, MiniMax-M2, and Brave Search for autonomous research and task execution.',
     tags: ['Hermes Agent', 'VPS', 'OpenClaw', 'MiniMax-M2', 'Brave Search'],
     href: '#contact',
     linkLabel: 'Ask me about it',
@@ -50,7 +50,7 @@ const PROJECTS: Project[] = [
   {
     title: 'This Portfolio',
     description:
-      'The site you’re on. Built from scratch with Next.js 14, Tailwind, and Framer Motion — dark, fast, and fully responsive.',
+      "The site you’re on. Built from scratch with Next.js 14, Tailwind, and Framer Motion. Dark, fast, and fully responsive.",
     tags: ['Next.js', 'Tailwind', 'Framer Motion', 'TypeScript'],
     href: 'https://github.com/peterantoun/peterantoun.com',
     linkLabel: 'View source',
@@ -78,7 +78,7 @@ export default function Projects() {
           variants={fadeUp}
           className="mt-3 max-w-xl text-muted"
         >
-          A mix of work, side projects, and experiments — from production
+          A mix of work, side projects, and experiments. From production
           analytics to autonomous agents.
         </motion.p>
 

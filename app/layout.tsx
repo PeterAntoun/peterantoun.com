@@ -1,10 +1,18 @@
-import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import type { Metadata } from 'next';
+import { Bricolage_Grotesque, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({
+const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
-  variable: '--font-inter',
+  axes: ['opsz'],
+  variable: '--font-display',
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-mono',
   display: 'swap',
 });
 
@@ -12,86 +20,43 @@ const siteUrl = 'https://peterantoun.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: {
-    default: 'Peter Antoun — Data & AI',
-    template: '%s · Peter Antoun',
-  },
+  title: 'Peter Antoun — Data-Driven Growth',
   description:
-    'Peter Antoun (Baba) — Data & AI student and builder. I build analytics pipelines, AI agents, and tools with data, Python, SQL, and Next.js. Based in Paris.',
-  keywords: [
-    'Peter Antoun',
-    'Data & AI',
-    'AI Agents',
-    'Data Analytics',
-    'Next.js',
-    'Snowflake',
-    'Python',
-    'Paris',
-    'Portfolio',
-  ],
+    'Peter Antoun — Data & AI student and builder based in Paris. Analytics pipelines, AI agents, and tools that turn data into decisions.',
+  keywords: ['Peter Antoun', 'Data', 'AI', 'Growth', 'Analytics', 'Paris', 'Portfolio'],
   authors: [{ name: 'Peter Antoun', url: siteUrl }],
   creator: 'Peter Antoun',
-  alternates: {
-    canonical: siteUrl,
-  },
+  alternates: { canonical: siteUrl },
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: siteUrl,
     siteName: 'Peter Antoun',
-    title: 'Peter Antoun — Data & AI',
-    description:
-      'Data & AI student and builder. Analytics pipelines, AI agents, and tools built with data, Python, SQL, and Next.js.',
-    images: [
-      {
-        // Placeholder — drop a 1200×630 image at /public/og.png to replace.
-        url: '/og.png',
-        width: 1200,
-        height: 630,
-        alt: 'Peter Antoun — Data & AI',
-      },
-    ],
+    title: 'Peter Antoun — Data-Driven Growth',
+    description: 'Data & AI student and builder. Analytics pipelines, AI agents, and tools that scale brands.',
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Peter Antoun' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Peter Antoun — Data & AI',
-    description:
-      'Data & AI student and builder. I build things with data and AI.',
+    title: 'Peter Antoun — Data-Driven Growth',
+    description: 'Data & AI student and builder based in Paris.',
     images: ['/og.png'],
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  icons: {
-    icon: '/favicon.svg',
-  },
+  robots: { index: true, follow: true },
+  icons: { icon: '/favicon.svg' },
 };
 
-export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fafafc' },
-    { media: '(prefers-color-scheme: dark)', color: '#08090c' },
-  ],
-  width: 'device-width',
-  initialScale: 1,
-};
+const themeInit = `(function(){try{var t=localStorage.getItem('pa-theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();`;
 
-// Runs before paint to set the theme class, avoiding a light/dark flash.
-// Precedence: explicit saved choice → OS preference → dark.
-const themeInit = `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&(t==='dark'||window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`;
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
       </head>
-      <body>{children}</body>
+      <body className={`${bricolage.variable} ${jetbrainsMono.variable}`}>
+        {children}
+      </body>
     </html>
   );
 }

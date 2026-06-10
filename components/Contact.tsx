@@ -9,8 +9,8 @@ type Status = 'idle' | 'sending' | 'success' | 'error';
 const SOCIALS = [
   {
     label: 'Email',
-    value: 'hello@peterantoun.com',
-    href: 'mailto:hello@peterantoun.com',
+    value: 'antounpeter@gmail.com',
+    href: 'mailto:antounpeter@gmail.com',
   },
   {
     label: 'LinkedIn',
@@ -82,7 +82,7 @@ export default function Contact() {
         </motion.h2>
         <motion.p variants={fadeUp} className="mt-3 max-w-xl text-muted">
           Got a project, a role, or just want to talk data and AI? Drop me a
-          line — I read everything.
+          line. I read everything.
         </motion.p>
 
         <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_1.1fr]">
@@ -191,7 +191,7 @@ export default function Contact() {
               <p aria-live="polite" className="text-sm">
                 {status === 'success' && (
                   <span className="text-accent-cyan">
-                    Thanks — I&apos;ll be in touch soon.
+                    Thanks. I&apos;ll be in touch soon.
                   </span>
                 )}
                 {status === 'error' && (
