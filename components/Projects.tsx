@@ -5,7 +5,8 @@ type Project = {
   description: string;
   tags: string[];
   href: string;
-  image?: string; // path to /public/... — leave undefined for placeholder
+  image?: string;       // cover / logo image
+  slides?: string[];    // study / case-study images shown below description
 };
 
 const PROJECTS: Project[] = [
@@ -17,6 +18,20 @@ const PROJECTS: Project[] = [
       'A proactive AI agent that manages your entire GTD workflow — not a task manager, an always-on assistant. Captures anything via Telegram, runs the full GTD Clarify flowchart via Groq Llama 3, and proactively surfaces what to work on next using a Four-Criteria model.',
     tags: ['Next.js', 'Convex', 'Groq Llama 3', 'Telegram Bot', 'Google Calendar', 'Auth.js'],
     href: 'https://antoun-twin.vercel.app',
+  },
+  {
+    title: 'M+ Renewal Calibration',
+    category: 'Data · Retention',
+    year: '2025',
+    description:
+      'Analysed the renewal behaviour of Monoprix M+ subscribers across a 2021–2026 cohort to answer one question: when should a discount voucher be sent to maximise renewals without cannibalising spontaneous ones? Built a cumulative renewal calendar and convergence model showing the natural renewal window closes at J+21 — the optimal send date.',
+    tags: ['SQL', 'Snowflake', 'Cohort Analysis', 'Retention', 'Monoprix'],
+    href: '#contact',
+    // image: '/projects/monoprix/logo.png' — add once you have the logo
+    slides: [
+      '/projects/monoprix/chart-convergence.png',
+      '/projects/monoprix/chart-cumulative.png',
+    ],
   },
 ];
 
@@ -38,19 +53,21 @@ export default function Projects() {
             <a
               key={p.title}
               href={p.href}
-              target="_blank"
-              rel="noreferrer noopener"
+              target={p.href.startsWith('http') ? '_blank' : undefined}
+              rel={p.href.startsWith('http') ? 'noreferrer noopener' : undefined}
               className="proj-card"
               data-reveal
               data-delay={String(i + 1)}
             >
-              {/* image / placeholder */}
+              {/* cover image / placeholder */}
               <div className="proj-img">
                 {p.image ? (
                   <img src={p.image} alt={p.title} />
                 ) : (
                   <div className="proj-placeholder">
-                    <span className="proj-placeholder-url mono">{p.href.replace('https://', '')}</span>
+                    <span className="proj-placeholder-url mono">
+                      {p.href.startsWith('http') ? p.href.replace('https://', '') : p.title}
+                    </span>
                   </div>
                 )}
                 <span className="proj-visit">
@@ -71,6 +88,20 @@ export default function Projects() {
                     <li key={tag}>{tag}</li>
                   ))}
                 </ul>
+
+                {/* study slides */}
+                {p.slides && p.slides.length > 0 && (
+                  <div className="proj-slides">
+                    {p.slides.map((src, si) => (
+                      <img
+                        key={si}
+                        src={src}
+                        alt={`${p.title} chart ${si + 1}`}
+                        className="proj-slide-img"
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </a>
           ))}
