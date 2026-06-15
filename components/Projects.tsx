@@ -29,8 +29,8 @@ const PROJECTS: Project[] = [
     href: '#contact',
     image: '/projects/monoprix/logo.png',
     slides: [
+      '/projects/monoprix/chart-cumulative-screenshot.png',
       '/projects/monoprix/chart-convergence.png',
-      '/projects/monoprix/chart-cumulative.png',
     ],
   },
   {
@@ -43,9 +43,10 @@ const PROJECTS: Project[] = [
     href: '#contact',
     image: '/projects/monoprix/logo.png',
     slides: [
-      '/projects/monoprix/dash-recruitment.png',
-      '/projects/monoprix/dash-active-subscribers.png',
       '/projects/monoprix/reporting-weekly.png',
+      '/projects/monoprix/dash-recruitment-inked.jpg',
+      '/projects/monoprix/dash-active-subscribers.png',
+      '/projects/monoprix/reporting-monthly-exec.png',
     ],
   },
   {
