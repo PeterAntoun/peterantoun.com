@@ -26,11 +26,11 @@ export default function Projects() {
       <div className="wrap">
         <div className="sec-head" data-reveal>
           <h2>
-            Built &amp;
+            Selected
             <br />
-            shipped
+            projects
           </h2>
-          <span className="mono idx">(02 — projects)</span>
+          <span className="mono idx" data-scramble>(02 — built)</span>
         </div>
 
         <div className="proj-grid">

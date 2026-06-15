@@ -329,30 +329,6 @@ img { max-width: 100%; display: block; }
   transition: color .35s, border-color .35s;
 }
 
-/* ---------- selected work list ---------- */
-.work-list { border-top: 1px solid var(--line-2); }
-.work-row {
-  display: grid; grid-template-columns: 64px 1fr auto auto auto; align-items: center;
-  gap: clamp(14px, 3vw, 48px);
-  padding: clamp(20px, 3vw, 34px) 8px; border-bottom: 1px solid var(--line-2);
-  position: relative; cursor: pointer; isolation: isolate;
-}
-.work-row .fill {
-  position: absolute; inset: 0; background: var(--accent); transform: scaleY(0);
-  transform-origin: bottom; transition: transform .45s cubic-bezier(.16,.84,.3,1); z-index: -1;
-}
-.work-row:hover .fill { transform: scaleY(1); }
-.work-row:hover, .work-row:hover .w-cat, .work-row:hover .w-year { color: var(--accent-ink); }
-.work-row .w-num { font-family: var(--mono); font-size: 12px; color: var(--faint); transition: color .4s; }
-.work-row:hover .w-num { color: color-mix(in srgb, var(--accent-ink) 75%, transparent); }
-.w-title { font-size: clamp(24px, 3.4vw, 46px); font-weight: 700; letter-spacing: -.025em; line-height: 1.02; }
-.w-title .kind { font-size: .42em; vertical-align: middle; margin-left: 12px; font-weight: 500; color: var(--faint); font-family: var(--mono); letter-spacing: .08em; text-transform: uppercase; transition: color .4s; }
-.work-row:hover .kind { color: color-mix(in srgb, var(--accent-ink) 70%, transparent); }
-.w-cat { color: var(--mid); font-size: 14px; transition: color .4s; white-space: nowrap; }
-.w-year { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); transition: color .4s; }
-.w-go { display: flex; transition: transform .4s; }
-.work-row:hover .w-go { transform: translate(6px,-6px); }
-
 /* ---------- education ---------- */
 .edu-head { display: flex; align-items: center; gap: 20px; color: var(--mid); margin-bottom: clamp(28px, 4vw, 52px); }
 .edu-head .mono { color: var(--accent); white-space: nowrap; }
@@ -487,10 +463,7 @@ img { max-width: 100%; display: block; }
   .p-title { font-size: clamp(20px, 7vw, 28px); margin: 14px 0 8px; }
   .contact .ct-grid { grid-template-columns: 1fr; }
   .headshot-wrap { justify-content: flex-start; }
-  .work-row { grid-template-columns: 1fr auto; row-gap: 6px; }
-  .work-row .w-num { display: none; }
-  .work-row .w-cat { grid-column: 1; }
-  .work-row .w-go { display: none; }
+
   .edu-top { gap: 10px; }
   .edu-card { padding: 14px 12px; }
   .edu-wires { height: 80px; }
