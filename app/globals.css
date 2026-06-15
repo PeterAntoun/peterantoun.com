@@ -413,11 +413,20 @@ img { max-width: 100%; display: block; }
 .contact .btn:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .contact .btn.ghost { background: transparent; color: var(--bg); }
 .contact .btn.ghost:hover { background: var(--bg); color: var(--ink); }
-.headshot-wrap { display: flex; justify-content: flex-end; }
+.headshot-wrap {
+  display: flex; justify-content: flex-end;
+  padding: 6px;
+  border: 1.5px solid color-mix(in srgb, var(--bg) 20%, transparent);
+  border-radius: 50%;
+  width: fit-content;
+}
 .headshot-circle {
-  width: 160px; height: 160px; border-radius: 50%;
+  width: clamp(140px, 16vw, 200px);
+  height: clamp(140px, 16vw, 200px);
+  border-radius: 50%;
   object-fit: cover; object-position: top center;
   display: block;
+  box-shadow: 0 0 0 3px var(--ink), 0 0 0 5px color-mix(in srgb, var(--bg) 30%, transparent);
 }
 .ct-side { display: flex; flex-direction: column; gap: 22px; }
 .ct-links { display: flex; flex-direction: column; gap: 2px; }
@@ -466,7 +475,7 @@ img { max-width: 100%; display: block; }
   .pillar { min-height: 0; padding: 16px 16px 18px; }
   .p-title { font-size: clamp(20px, 7vw, 28px); margin: 14px 0 8px; }
   .contact .ct-grid { grid-template-columns: 1fr; }
-  .headshot-wrap { justify-content: flex-start; }
+  .headshot-wrap { justify-content: center; align-self: center; margin: 0 auto; }
 
   .edu-top { gap: 10px; }
   .edu-card { padding: 14px 12px; }
