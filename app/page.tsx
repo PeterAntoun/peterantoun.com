@@ -1,6 +1,7 @@
 import Topbar from '@/components/Topbar';
 import Hero from '@/components/Hero';
 import Expertise from '@/components/Expertise';
+import Projects from '@/components/Projects';
 import Education from '@/components/Education';
 import Work from '@/components/Work';
 import ContactSection from '@/components/ContactSection';
@@ -15,6 +16,7 @@ export default function Home() {
       <main id="top">
         <Hero />
         <Expertise />
+        <Projects />
         <Education />
         <Work />
         <ContactSection />

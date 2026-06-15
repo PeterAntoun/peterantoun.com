@@ -4,8 +4,9 @@ import { useState } from 'react';
 
 const NAV_LINKS = [
   { label: 'Expertise', href: '#expertise' },
-  { label: 'Education', href: '#education' },
+  { label: 'Projects',  href: '#projects' },
   { label: 'Work',      href: '#work' },
+  { label: 'Education', href: '#education' },
 ];
 
 export default function Topbar() {
