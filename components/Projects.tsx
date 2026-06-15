@@ -30,7 +30,7 @@ const PROJECTS: Project[] = [
     image: '/projects/monoprix/logo.png',
     slides: [
       '/projects/monoprix/chart-cumulative-screenshot.png',
-      '/projects/monoprix/chart-convergence.png',
+      '/projects/monoprix/tableau-cumulatif.png',
     ],
   },
   {
@@ -43,7 +43,6 @@ const PROJECTS: Project[] = [
     href: '#contact',
     image: '/projects/monoprix/logo.png',
     slides: [
-      '/projects/monoprix/reporting-weekly.png',
       '/projects/monoprix/dash-recruitment-inked.jpg',
       '/projects/monoprix/dash-active-subscribers.png',
       '/projects/monoprix/reporting-monthly-exec.png',
