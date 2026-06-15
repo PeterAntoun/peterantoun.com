@@ -20,28 +20,40 @@ const PROJECTS: Project[] = [
     href: 'https://antoun-twin.vercel.app',
   },
   {
-    title: 'M+ Renewal Calibration',
+    title: 'Renewal Timing Calibration',
     category: 'Data · Retention',
     year: '2025',
     description:
-      'Analysed the renewal behaviour of Monoprix M+ subscribers across a 2021–2026 cohort to answer one question: when should a discount voucher be sent to maximise renewals without cannibalising spontaneous ones? Built a cumulative renewal calendar and convergence model showing the natural renewal window closes at J+21 — the optimal send date.',
+      'Analysed subscriber renewal behaviour across a 2021–2026 cohort to answer one question: when should a discount voucher be sent to maximise renewals without cannibalising spontaneous ones? Built a cumulative renewal calendar and convergence model — the natural renewal window closes at J+21, making it the optimal send date.',
     tags: ['SQL', 'Snowflake', 'Cohort Analysis', 'Retention', 'Monoprix'],
     href: '#contact',
     image: '/projects/monoprix/logo.png',
     slides: [
       '/projects/monoprix/chart-convergence.png',
       '/projects/monoprix/chart-cumulative.png',
+    ],
+  },
+  {
+    title: 'Subscription Reporting Suite',
+    category: 'Data · Analytics',
+    year: '2025–2026',
+    description:
+      'Built a recurring weekly reporting framework and two operational dashboards tracking active subscriber evolution by channel and format, new subscriber recruitment year-over-year, and weekly KPI flows — renewals, churn, re-subscriptions, and net movement.',
+    tags: ['SQL', 'Snowflake', 'Excel', 'Dashboard', 'Monoprix'],
+    href: '#contact',
+    image: '/projects/monoprix/logo.png',
+    slides: [
       '/projects/monoprix/dash-recruitment.png',
       '/projects/monoprix/dash-active-subscribers.png',
       '/projects/monoprix/reporting-weekly.png',
     ],
   },
   {
-    title: 'Affiliate REM Uplift Analysis',
+    title: 'Affiliate Commission Uplift',
     category: 'Data · Performance Marketing',
     year: '2026',
     description:
-      'PRE vs POST analysis of a Kwanko affiliate commission increase (29 Jan 2026). Despite a +39.7% budget increase, CAC remained nearly flat (+€6, +1.6%). New M+ subscribers grew +36.5% and the campaign generated a cross-sell effect — driving +37% more Express new clients in parallel. Co-authored with Joé Edjokola.',
+      'PRE vs POST analysis of a Kwanko affiliate commission increase (Jan 2026). Despite a +39.7% budget increase, CAC remained nearly flat (+1.6%). New subscribers grew +36.5% and the campaign generated a cross-sell effect — driving +37% more Express new clients in parallel. Co-authored with Joé Edjokola.',
     tags: ['SQL', 'Kwanko', 'Affiliate Marketing', 'CAC Analysis', 'Monoprix'],
     href: '#contact',
     image: '/projects/monoprix/logo.png',
