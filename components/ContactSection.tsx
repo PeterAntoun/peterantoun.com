@@ -24,7 +24,7 @@ export default function ContactSection() {
 
               <div className="ct-side" data-reveal data-delay="1">
                 <div className="headshot-wrap">
-                  <div className="headshot-circle">headshot</div>
+                  <img src="/headshot.png" alt="Peter Antoun" className="headshot-circle" />
                 </div>
                 <div className="ct-links">
                   <a href="https://www.linkedin.com/in/peterantoun" target="_blank" rel="noreferrer noopener">

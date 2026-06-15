@@ -13,32 +13,22 @@ export default function Hero() {
         </h1>
 
         <div className="hero-foot">
-          <div className="hero-text">
-            <p className="tagline" data-reveal data-delay="1">
-              I help scale brands with <em>data-driven</em> strategies.
-            </p>
-            <div className="hero-meta" data-reveal data-delay="2">
-              <div className="hero-cta">
-                <a href="#contact" className="btn">
-                  Hire me <span className="arr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
-                </a>
-                <a href="#projects" className="btn ghost">
-                  See the work
-                </a>
-              </div>
-              <span className="availability">
-                <span className="pulse" />
-                Open to new roles · 2026
-              </span>
+          <p className="tagline" data-reveal data-delay="1">
+            I help scale brands with <em>data-driven</em> strategies.
+          </p>
+          <div className="hero-meta" data-reveal data-delay="2">
+            <div className="hero-cta">
+              <a href="#contact" className="btn">
+                Hire me <span className="arr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+              </a>
+              <a href="#projects" className="btn ghost">
+                See the work
+              </a>
             </div>
-          </div>
-
-          <div className="hero-photo-wrap" data-reveal data-delay="2">
-            <img
-              src="/headshot.png"
-              alt="Peter Antoun"
-              className="hero-photo"
-            />
+            <span className="availability">
+              <span className="pulse" />
+              Open to new roles · 2026
+            </span>
           </div>
         </div>
       </div>
