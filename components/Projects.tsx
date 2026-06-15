@@ -97,21 +97,15 @@ export default function Projects() {
               data-reveal
               data-delay={String(i + 1)}
             >
-              {/* cover image / placeholder */}
-              <div className="proj-img">
-                {p.image ? (
+              {/* cover image — only render when there is one */}
+              {p.image && (
+                <div className="proj-img">
                   <img src={p.image} alt={p.title} />
-                ) : (
-                  <div className="proj-placeholder">
-                    <span className="proj-placeholder-url mono">
-                      {p.href.startsWith('http') ? p.href.replace('https://', '') : p.title}
-                    </span>
-                  </div>
-                )}
-                <span className="proj-visit">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
-                </span>
-              </div>
+                  <span className="proj-visit">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+                  </span>
+                </div>
+              )}
 
               {/* content */}
               <div className="proj-body">
