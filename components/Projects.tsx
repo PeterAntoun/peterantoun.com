@@ -45,7 +45,6 @@ const PROJECTS: Project[] = [
     slides: [
       '/projects/monoprix/dash-recruitment-inked.jpg',
       '/projects/monoprix/dash-active-subscribers.png',
-      '/projects/monoprix/reporting-monthly-exec.png',
     ],
   },
   {
