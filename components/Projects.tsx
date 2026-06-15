@@ -42,9 +42,6 @@ const PROJECTS: Project[] = [
     tags: ['SQL', 'Kwanko', 'Affiliate Marketing', 'CAC Analysis', 'Monoprix'],
     href: '#contact',
     image: '/projects/monoprix/logo.png',
-    slides: [
-      '/projects/monoprix/chart-hausse-rem.png',
-    ],
   },
 ];
 
