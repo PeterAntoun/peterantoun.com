@@ -53,10 +53,23 @@ const PROJECTS: Project[] = [
     category: 'Data · Performance Marketing',
     year: '2026',
     description:
-      'PRE vs POST analysis of a Kwanko affiliate commission increase (Jan 2026). Despite a +39.7% budget increase, CAC remained nearly flat (+1.6%). New subscribers grew +36.5% and the campaign generated a cross-sell effect — driving +37% more Express new clients in parallel. Co-authored with Joé Edjokola.',
+      'PRE vs POST analysis of a Kwanko affiliate commission increase (Jan 2026). Despite a +39.7% budget increase, CAC remained nearly flat (+1.6%). New subscribers grew +36.5% and the campaign generated a cross-sell effect — driving +37% more Express new clients in parallel.',
     tags: ['SQL', 'Kwanko', 'Affiliate Marketing', 'CAC Analysis', 'Monoprix'],
     href: '#contact',
     image: '/projects/monoprix/logo.png',
+  },
+  {
+    title: 'Monthly Executive Reporting',
+    category: 'Data · Analytics',
+    year: '2025–2026',
+    description:
+      'Designed and produced the monthly comité KPI dashboard presented to Monoprix leadership — consolidating subscriber evolution, channel mix, recruitment and churn trends into a single executive view.',
+    tags: ['SQL', 'Snowflake', 'Excel', 'Dashboard', 'Monoprix'],
+    href: '#contact',
+    image: '/projects/monoprix/logo.png',
+    slides: [
+      '/projects/monoprix/reporting-monthly-exec.png',
+    ],
   },
 ];
 
