@@ -31,6 +31,9 @@ const PROJECTS: Project[] = [
     slides: [
       '/projects/monoprix/chart-convergence.png',
       '/projects/monoprix/chart-cumulative.png',
+      '/projects/monoprix/dash-recruitment.png',
+      '/projects/monoprix/dash-active-subscribers.png',
+      '/projects/monoprix/reporting-weekly.png',
     ],
   },
   {
