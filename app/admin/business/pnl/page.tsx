@@ -1,19 +1,25 @@
 import { cashFlow, pnlSeries, spendByCategory } from '@/lib/db/analytics';
-import { monthRange } from '@/lib/db/queries';
+import { resolvePeriod, currentMonth } from '@/lib/db/queries';
 import { formatMoney } from '@/lib/money';
 import StatCard from '@/components/admin/StatCard';
+import PeriodNav from '@/components/admin/PeriodNav';
 import { PnlChart, CategoryDonut } from '@/components/admin/Charts';
 
 export const dynamic = 'force-dynamic';
 
-export default async function PnlPage() {
-  const { from, to, label } = monthRange(0);
+export default async function PnlPage({
+  searchParams,
+}: {
+  searchParams: { month?: string; period?: string };
+}) {
+  const period = resolvePeriod(searchParams);
   const [cf, series, byCat] = await Promise.all([
-    cashFlow('business', from, to),
+    cashFlow('business', period.from, period.to),
     pnlSeries(6),
-    spendByCategory('business', from, to),
+    spendByCategory('business', period.from, period.to),
   ]);
   const base = cf.base;
+  const label = period.label;
   const margin = cf.income > 0 ? Math.round((cf.net / cf.income) * 100) : 0;
 
   return (
@@ -23,6 +29,10 @@ export default async function PnlPage() {
           <h1 className="adm-page-title">Profit &amp; loss</h1>
           <p className="adm-page-sub">Business · {label} · {base}.</p>
         </div>
+        <PeriodNav
+          month={period.kind === 'month' ? period.month : currentMonth()}
+          isAll={period.kind === 'all'}
+        />
       </header>
 
       <section className="adm-stat-grid">

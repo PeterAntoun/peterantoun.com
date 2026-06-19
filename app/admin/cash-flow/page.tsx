@@ -1,19 +1,25 @@
 import { cashFlow, monthlySeries, spendByCategory } from '@/lib/db/analytics';
-import { monthRange } from '@/lib/db/queries';
+import { resolvePeriod, currentMonth } from '@/lib/db/queries';
 import { formatMoney } from '@/lib/money';
 import StatCard from '@/components/admin/StatCard';
+import PeriodNav from '@/components/admin/PeriodNav';
 import { IncomeExpenseChart, CategoryDonut } from '@/components/admin/Charts';
 
 export const dynamic = 'force-dynamic';
 
-export default async function CashFlowPage() {
-  const { from, to, label } = monthRange(0);
+export default async function CashFlowPage({
+  searchParams,
+}: {
+  searchParams: { month?: string; period?: string };
+}) {
+  const period = resolvePeriod(searchParams);
   const [cf, series, byCat] = await Promise.all([
-    cashFlow('personal', from, to),
+    cashFlow('personal', period.from, period.to),
     monthlySeries('personal', 6),
-    spendByCategory('personal', from, to),
+    spendByCategory('personal', period.from, period.to),
   ]);
   const base = cf.base;
+  const label = period.label;
 
   return (
     <>
@@ -22,6 +28,10 @@ export default async function CashFlowPage() {
           <h1 className="adm-page-title">Cash flow</h1>
           <p className="adm-page-sub">Personal income & spending · {label} · {base}.</p>
         </div>
+        <PeriodNav
+          month={period.kind === 'month' ? period.month : currentMonth()}
+          isAll={period.kind === 'all'}
+        />
       </header>
 
       <section className="adm-stat-grid">

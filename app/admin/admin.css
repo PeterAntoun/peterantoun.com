@@ -426,6 +426,46 @@
   .adm-main { padding: 20px 16px; }
 }
 
+/* ---- period selector -------------------------------------- */
+.adm-period {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.adm-period-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  color: var(--ink);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.adm-period-btn:hover:not(:disabled) {
+  border-color: var(--mid);
+}
+.adm-period-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.adm-period-input {
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  color: var(--ink);
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color-scheme: light dark;
+}
+
 /* ---- loading skeleton (route transition feedback) --------- */
 .adm-skel {
   border-radius: 6px;

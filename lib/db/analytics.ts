@@ -67,20 +67,13 @@ export async function netWorthTrend(months = 12) {
 }
 
 /** Sum income/expense (minor, base currency) for a scope over a date range.
-    Transfers are excluded. */
-export async function cashFlow(scope: Scope, from: string, to: string) {
+    Omit from/to for all-time. Transfers are excluded. */
+export async function cashFlow(scope: Scope, from?: string, to?: string) {
   const conv = await buildBaseConverter();
-  const rows = await db
-    .select()
-    .from(transactions)
-    .where(
-      and(
-        eq(transactions.scope, scope),
-        ne(transactions.type, 'transfer'),
-        gte(transactions.date, from),
-        lte(transactions.date, to),
-      ),
-    );
+  const conds = [eq(transactions.scope, scope), ne(transactions.type, 'transfer')];
+  if (from) conds.push(gte(transactions.date, from));
+  if (to) conds.push(lte(transactions.date, to));
+  const rows = await db.select().from(transactions).where(and(...conds));
   let income = 0;
   let expense = 0;
   for (const t of rows) {
@@ -91,8 +84,11 @@ export async function cashFlow(scope: Scope, from: string, to: string) {
   return { income, expense, net: income - expense, base: conv.base };
 }
 
-export async function spendByCategory(scope: Scope, from: string, to: string) {
+export async function spendByCategory(scope: Scope, from?: string, to?: string) {
   const conv = await buildBaseConverter();
+  const conds = [eq(transactions.scope, scope), eq(transactions.type, 'expense')];
+  if (from) conds.push(gte(transactions.date, from));
+  if (to) conds.push(lte(transactions.date, to));
   const rows = await db
     .select({
       amount: transactions.amount,
@@ -103,14 +99,7 @@ export async function spendByCategory(scope: Scope, from: string, to: string) {
     })
     .from(transactions)
     .leftJoin(categories, eq(transactions.categoryId, categories.id))
-    .where(
-      and(
-        eq(transactions.scope, scope),
-        eq(transactions.type, 'expense'),
-        gte(transactions.date, from),
-        lte(transactions.date, to),
-      ),
-    );
+    .where(and(...conds));
 
   const map = new Map<string, { name: string; value: number; color: string }>();
   for (const r of rows) {

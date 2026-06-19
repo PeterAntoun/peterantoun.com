@@ -62,6 +62,16 @@ export function getTransactions(f: TxnFilters = {}) {
 export function monthRange(offset = 0): { from: string; to: string; label: string } {
   const now = new Date();
   const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + offset, 1));
+  return monthRangeFromDate(d);
+}
+
+/** First and last day of a specific 'YYYY-MM' month. */
+export function monthRangeOf(ym: string): { from: string; to: string; label: string } {
+  const [y, m] = ym.split('-').map(Number);
+  return monthRangeFromDate(new Date(Date.UTC(y, (m || 1) - 1, 1)));
+}
+
+function monthRangeFromDate(d: Date): { from: string; to: string; label: string } {
   const from = d.toISOString().slice(0, 10);
   const end = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0));
   const to = end.toISOString().slice(0, 10);
@@ -71,4 +81,30 @@ export function monthRange(offset = 0): { from: string; to: string; label: strin
     timeZone: 'UTC',
   });
   return { from, to, label };
+}
+
+/** Current month as 'YYYY-MM' (UTC). */
+export function currentMonth(): string {
+  return new Date().toISOString().slice(0, 7);
+}
+
+export type Period =
+  | { kind: 'month'; month: string; from: string; to: string; label: string }
+  | { kind: 'all'; from: undefined; to: undefined; label: string };
+
+/** Resolve a dashboard period from URL search params. `?period=all` means the
+    whole history; otherwise `?month=YYYY-MM`. With no params it defaults to the
+    current month, or all-time when `defaultAll` is set (e.g. the ledger, which
+    should show everything until narrowed). For 'all', from/to are undefined so
+    callers skip date filtering. */
+export function resolvePeriod(
+  sp: { month?: string; period?: string },
+  defaultAll = false,
+): Period {
+  const hasMonth = /^\d{4}-\d{2}$/.test(sp.month ?? '');
+  if (sp.period === 'all' || (defaultAll && !hasMonth)) {
+    return { kind: 'all', from: undefined, to: undefined, label: 'All time' };
+  }
+  const month = hasMonth ? (sp.month as string) : currentMonth();
+  return { kind: 'month', month, ...monthRangeOf(month) };
 }

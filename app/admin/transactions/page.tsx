@@ -1,5 +1,13 @@
-import { getAccounts, getCategories, getTransactions, type Scope } from '@/lib/db/queries';
+import {
+  getAccounts,
+  getCategories,
+  getTransactions,
+  resolvePeriod,
+  currentMonth,
+  type Scope,
+} from '@/lib/db/queries';
 import { formatMoney } from '@/lib/money';
+import PeriodNav from '@/components/admin/PeriodNav';
 import { deleteTransaction } from './actions';
 import AddTransactionForm from './AddTransactionForm';
 import CsvImporter from './CsvImporter';
@@ -9,24 +17,44 @@ export const dynamic = 'force-dynamic';
 export default async function TransactionsPage({
   searchParams,
 }: {
-  searchParams: { scope?: string; accountId?: string };
+  searchParams: { scope?: string; accountId?: string; month?: string; period?: string };
 }) {
   const scope = (searchParams.scope as Scope) || undefined;
   const accountId = searchParams.accountId ? Number(searchParams.accountId) : undefined;
+  const period = resolvePeriod(searchParams, true); // ledger defaults to all-time
 
   const [accts, cats, txns] = await Promise.all([
     getAccounts(),
     getCategories(),
-    getTransactions({ scope, accountId, limit: 500 }),
+    getTransactions({ scope, accountId, from: period.from, to: period.to, limit: 500 }),
   ]);
+
+  // Build hrefs for the scope filter that keep the current period selection.
+  const periodParams: Record<string, string | undefined> = {
+    month: searchParams.month,
+    period: searchParams.period,
+  };
+  const scopeHref = (s?: Scope) => {
+    const sp = new URLSearchParams();
+    if (s) sp.set('scope', s);
+    for (const [k, v] of Object.entries(periodParams)) if (v) sp.set(k, v);
+    const qs = sp.toString();
+    return qs ? `/admin/transactions?${qs}` : '/admin/transactions';
+  };
 
   return (
     <>
       <header className="adm-page-head">
         <div>
           <h1 className="adm-page-title">Transactions</h1>
-          <p className="adm-page-sub">Unified ledger across personal & business.</p>
+          <p className="adm-page-sub">
+            Unified ledger across personal & business · {period.label}.
+          </p>
         </div>
+        <PeriodNav
+          month={period.kind === 'month' ? period.month : currentMonth()}
+          isAll={period.kind === 'all'}
+        />
       </header>
 
       {accts.length === 0 ? (
@@ -51,13 +79,19 @@ export default async function TransactionsPage({
 
           {/* scope filter */}
           <nav className="adm-section" style={{ display: 'flex', gap: 8 }}>
-            <a className={`adm-btn ghost${!scope ? ' is-active' : ''}`} href="/admin/transactions">
+            <a className={`adm-btn ghost${!scope ? ' is-active' : ''}`} href={scopeHref()}>
               All
             </a>
-            <a className="adm-btn ghost" href="/admin/transactions?scope=personal">
+            <a
+              className={`adm-btn ghost${scope === 'personal' ? ' is-active' : ''}`}
+              href={scopeHref('personal')}
+            >
               Personal
             </a>
-            <a className="adm-btn ghost" href="/admin/transactions?scope=business">
+            <a
+              className={`adm-btn ghost${scope === 'business' ? ' is-active' : ''}`}
+              href={scopeHref('business')}
+            >
               Business
             </a>
           </nav>
