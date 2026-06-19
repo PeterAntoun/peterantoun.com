@@ -3,18 +3,24 @@ import { db } from '@/lib/db/client';
 import { invoices } from '@/lib/db/schema';
 import { netWorth, cashFlow } from '@/lib/db/analytics';
 import { buildBaseConverter } from '@/lib/fx';
-import { monthRange } from '@/lib/db/queries';
+import { resolvePeriod, currentMonth } from '@/lib/db/queries';
 import { formatMoney } from '@/lib/money';
 import StatCard from '@/components/admin/StatCard';
+import PeriodNav from '@/components/admin/PeriodNav';
 
 export const dynamic = 'force-dynamic';
 
-export default async function OverviewPage() {
-  const { from, to, label } = monthRange(0);
+export default async function OverviewPage({
+  searchParams,
+}: {
+  searchParams: { month?: string; period?: string };
+}) {
+  const period = resolvePeriod(searchParams);
+  const label = period.label;
   const [nw, personalCf, businessCf, conv, openInvoices] = await Promise.all([
-    netWorth(),
-    cashFlow('personal', from, to),
-    cashFlow('business', from, to),
+    netWorth(period.to), // as of the selected month-end (latest for all-time)
+    cashFlow('personal', period.from, period.to),
+    cashFlow('business', period.from, period.to),
     buildBaseConverter(),
     db
       .select()
@@ -37,6 +43,10 @@ export default async function OverviewPage() {
             Snapshot for {label} · all totals in {base}.
           </p>
         </div>
+        <PeriodNav
+          month={period.kind === 'month' ? period.month : currentMonth()}
+          isAll={period.kind === 'all'}
+        />
       </header>
 
       {nw.missing.length > 0 && (
