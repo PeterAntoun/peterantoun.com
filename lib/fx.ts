@@ -3,13 +3,22 @@
    frankfurter.app. Manual overrides in Settings are stored with source='manual'
    and win for their date because we read the most recent row. */
 
-import { cache } from 'react';
+import * as React from 'react';
 import { and, desc, eq } from 'drizzle-orm';
 import { db } from '@/lib/db/client';
 import { fxRates, settings } from '@/lib/db/schema';
 import { convertMinor, SUPPORTED_CURRENCIES } from '@/lib/money';
 
-export const getBaseCurrency = cache(async function getBaseCurrency(): Promise<string> {
+/* React.cache dedupes these reads per-request inside the Next server runtime.
+   In plain Node (the stdio MCP server, scripts) React.cache is undefined, so we
+   fall back to identity — calls just aren't memoized, which is harmless. */
+type CacheFn = <T extends (...args: never[]) => unknown>(fn: T) => T;
+const memo: CacheFn =
+  typeof (React as unknown as { cache?: CacheFn }).cache === 'function'
+    ? (React as unknown as { cache: CacheFn }).cache
+    : (fn) => fn;
+
+export const getBaseCurrency = memo(async function getBaseCurrency(): Promise<string> {
   const [row] = await db.select().from(settings).limit(1);
   return row?.baseCurrency ?? process.env.BASE_CURRENCY ?? 'USD';
 });
@@ -42,7 +51,7 @@ export async function getRate(from: string, to: string): Promise<number | null> 
 
 /** Build a converter to the base currency over all supported currencies.
     Pre-loads rates once so callers can convert many transactions cheaply. */
-export const buildBaseConverter = cache(async function buildBaseConverter(): Promise<{
+export const buildBaseConverter = memo(async function buildBaseConverter(): Promise<{
   base: string;
   toBase: (minor: number, currency: string) => number;
   missing: string[];

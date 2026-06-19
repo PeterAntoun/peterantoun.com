@@ -1,6 +1,3 @@
-import { and, eq, ne } from 'drizzle-orm';
-import { db } from '@/lib/db/client';
-import { invoices } from '@/lib/db/schema';
 import { netWorth, cashFlow } from '@/lib/db/analytics';
 import { buildBaseConverter } from '@/lib/fx';
 import { resolvePeriod, currentMonth } from '@/lib/db/queries';
@@ -17,22 +14,14 @@ export default async function OverviewPage({
 }) {
   const period = resolvePeriod(searchParams);
   const label = period.label;
-  const [nw, personalCf, businessCf, conv, openInvoices] = await Promise.all([
+  const [nw, personalCf, businessCf, conv] = await Promise.all([
     netWorth(period.to), // as of the selected month-end (latest for all-time)
     cashFlow('personal', period.from, period.to),
     cashFlow('business', period.from, period.to),
     buildBaseConverter(),
-    db
-      .select()
-      .from(invoices)
-      .where(and(ne(invoices.status, 'paid'), ne(invoices.status, 'draft'))),
   ]);
 
   const base = conv.base;
-  const receivable = openInvoices.reduce(
-    (sum, inv) => sum + conv.toBase(inv.total, inv.currency),
-    0,
-  );
 
   return (
     <>
@@ -72,15 +61,10 @@ export default async function OverviewPage({
           tone={personalCf.net >= 0 ? 'pos' : 'neg'}
         />
         <StatCard
-          label={`Business profit · ${label}`}
+          label={`Business · ${label}`}
           value={formatMoney(businessCf.net, base, { signed: true })}
-          sub={`${formatMoney(businessCf.income, base)} rev · ${formatMoney(businessCf.expense, base)} exp`}
+          sub={`${formatMoney(businessCf.income, base)} in · ${formatMoney(businessCf.expense, base)} out`}
           tone={businessCf.net >= 0 ? 'pos' : 'neg'}
-        />
-        <StatCard
-          label="Outstanding receivables"
-          value={formatMoney(receivable, base)}
-          sub={`${openInvoices.length} open invoice${openInvoices.length === 1 ? '' : 's'}`}
         />
       </section>
 
@@ -88,8 +72,8 @@ export default async function OverviewPage({
         <h2 className="adm-section-title">Quick links</h2>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <a className="adm-btn ghost" href="/admin/transactions">Add a transaction</a>
-          <a className="adm-btn ghost" href="/admin/net-worth">Update balances</a>
-          <a className="adm-btn ghost" href="/admin/business/invoices">New invoice</a>
+          <a className="adm-btn ghost" href="/admin/cash-flow">View spending</a>
+          <a className="adm-btn ghost" href="/admin/net-worth">Reconcile balances</a>
         </div>
       </section>
     </>

@@ -12,38 +12,77 @@ const LIABILITY_TYPES = new Set(['credit_card', 'loan', 'liability']);
 
 type Acct = typeof accounts.$inferSelect;
 type Snapshot = typeof accountBalances.$inferSelect;
+type BalTxn = { accountId: number; date: string; amount: number };
 
-/** Load every active account and all of its balance snapshots in two queries
-    (snapshots sorted newest-first). Callers then derive any as-of-date balance
-    in memory — volumes are small and this avoids an N+1 over the network. */
-async function loadBalanceData(): Promise<{ accts: Acct[]; snaps: Snapshot[] }> {
+/** Load active accounts, all balance snapshots (newest-first), and every
+    transaction (account/date/amount) in three queries. Callers then derive any
+    as-of-date balance in memory — volumes are small and this avoids N+1s. */
+async function loadBalanceData(): Promise<{ accts: Acct[]; snaps: Snapshot[]; txns: BalTxn[] }> {
   const accts = await db.select().from(accounts).where(eq(accounts.isActive, true));
-  if (accts.length === 0) return { accts, snaps: [] };
-  const snaps = await db
-    .select()
-    .from(accountBalances)
-    .where(inArray(accountBalances.accountId, accts.map((a) => a.id)))
-    .orderBy(desc(accountBalances.asOfDate));
-  return { accts, snaps };
+  if (accts.length === 0) return { accts, snaps: [], txns: [] };
+  const ids = accts.map((a) => a.id);
+  const [snaps, txns] = await Promise.all([
+    db
+      .select()
+      .from(accountBalances)
+      .where(inArray(accountBalances.accountId, ids))
+      .orderBy(desc(accountBalances.asOfDate)),
+    db
+      .select({
+        accountId: transactions.accountId,
+        date: transactions.date,
+        amount: transactions.amount,
+      })
+      .from(transactions)
+      .where(inArray(transactions.accountId, ids)),
+  ]);
+  return { accts, snaps, txns };
 }
 
-/** Latest snapshot balance for an account as of `date` (inclusive), falling back
-    to the opening balance. `snaps` must be sorted newest-first. */
-function balanceAsOf(a: Acct, snaps: Snapshot[], date?: string): number {
+/** Derived balance for an account as of `date` (default: now).
+
+    A manual snapshot is treated as a reconcile *anchor*: we take the latest
+    snapshot on/before `date`, then add every transaction posted after it (up to
+    `date`). With no snapshot we start from the opening balance and add all
+    transactions to date. So balances move automatically as transactions land,
+    while a snapshot lets you re-anchor when the real bank balance drifts.
+
+    Assumes a transaction's amount is in its account's currency (true for bank
+    imports); conversion to the base currency happens in computeNetWorth. */
+function balanceAsOf(a: Acct, snaps: Snapshot[], txns: BalTxn[], date?: string): number {
+  let base = a.openingBalance;
+  let since: string | null = null; // exclusive: txns on/before this are in `base`
   for (const s of snaps) {
     if (s.accountId !== a.id) continue;
-    if (!date || s.asOfDate <= date) return s.balance;
+    if (!date || s.asOfDate <= date) {
+      base = s.balance;
+      since = s.asOfDate;
+      break;
+    }
   }
-  return a.openingBalance;
+  let sum = 0;
+  for (const t of txns) {
+    if (t.accountId !== a.id) continue;
+    if (date && t.date > date) continue;
+    if (since && t.date <= since) continue;
+    sum += t.amount;
+  }
+  return base + sum;
 }
 
 type Converter = Awaited<ReturnType<typeof buildBaseConverter>>;
 
-function computeNetWorth(accts: Acct[], snaps: Snapshot[], conv: Converter, date?: string) {
+function computeNetWorth(
+  accts: Acct[],
+  snaps: Snapshot[],
+  txns: BalTxn[],
+  conv: Converter,
+  date?: string,
+) {
   let assets = 0;
   let liabilities = 0;
   for (const a of accts) {
-    const v = conv.toBase(balanceAsOf(a, snaps, date), a.currency);
+    const v = conv.toBase(balanceAsOf(a, snaps, txns, date), a.currency);
     if (LIABILITY_TYPES.has(a.type)) liabilities += v;
     else assets += v;
   }
@@ -51,19 +90,33 @@ function computeNetWorth(accts: Acct[], snaps: Snapshot[], conv: Converter, date
 }
 
 export async function netWorth(date?: string) {
-  const [conv, { accts, snaps }] = await Promise.all([buildBaseConverter(), loadBalanceData()]);
-  return computeNetWorth(accts, snaps, conv, date);
+  const [conv, data] = await Promise.all([buildBaseConverter(), loadBalanceData()]);
+  return computeNetWorth(data.accts, data.snaps, data.txns, conv, date);
 }
 
 export async function netWorthTrend(months = 12) {
-  // Load accounts + snapshots once, then derive each month-end in memory.
-  const [conv, { accts, snaps }] = await Promise.all([buildBaseConverter(), loadBalanceData()]);
+  // Load everything once, then derive each month-end balance in memory.
+  const [conv, data] = await Promise.all([buildBaseConverter(), loadBalanceData()]);
   const points: { label: string; value: number }[] = [];
   for (let i = months - 1; i >= 0; i--) {
     const { to, label } = monthRange(-i);
-    points.push({ label, value: computeNetWorth(accts, snaps, conv, to).net / 100 });
+    points.push({
+      label,
+      value: computeNetWorth(data.accts, data.snaps, data.txns, conv, to).net / 100,
+    });
   }
   return points;
+}
+
+/** Current derived balance per active account (account's own currency), plus
+    the matching net-worth roll-up. Used by the Net worth page. */
+export async function accountBalancesNow() {
+  const data = await loadBalanceData();
+  const rows = data.accts.map((account) => ({
+    account,
+    balance: balanceAsOf(account, data.snaps, data.txns),
+  }));
+  return rows;
 }
 
 /** Sum income/expense (minor, base currency) for a scope over a date range.
@@ -145,16 +198,5 @@ export async function monthlySeries(scope: Scope, months = 6) {
     label: b.label,
     income: b.income / 100,
     expense: b.expense / 100,
-  }));
-}
-
-/** Business P&L per month (major units, base currency). */
-export async function pnlSeries(months = 6) {
-  const series = await monthlySeries('business', months);
-  return series.map((m) => ({
-    label: m.label,
-    revenue: m.income,
-    expenses: m.expense,
-    profit: m.income - m.expense,
   }));
 }

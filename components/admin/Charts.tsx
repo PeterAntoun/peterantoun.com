@@ -19,7 +19,6 @@ import {
 const ACCENT = '#1f9d57';
 const INK = '#6b6860';
 const NEG = '#c0492b';
-const BLUE = '#2f6b8f';
 
 function fmt(currency: string) {
   const nf = new Intl.NumberFormat('en-US', {
@@ -116,33 +115,6 @@ export function CategoryDonut({
           <Tooltip formatter={(v: unknown) => f(Number(v))} />
           <Legend />
         </PieChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
-
-/* ---- P&L (revenue / expense / profit) --------------------- */
-export function PnlChart({
-  data,
-  currency,
-}: {
-  data: { label: string; revenue: number; expenses: number; profit: number }[];
-  currency: string;
-}) {
-  const f = fmt(currency);
-  return (
-    <div className="adm-chart">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2dfd6" vertical={false} />
-          <XAxis dataKey="label" {...axisProps} />
-          <YAxis tickFormatter={f} {...axisProps} width={56} />
-          <Tooltip formatter={(v: unknown) => f(Number(v))} />
-          <Legend />
-          <Bar dataKey="revenue" name="Revenue" fill={ACCENT} radius={[3, 3, 0, 0]} />
-          <Bar dataKey="expenses" name="Expenses" fill={BLUE} radius={[3, 3, 0, 0]} />
-          <Bar dataKey="profit" name="Profit" fill={INK} radius={[3, 3, 0, 0]} />
-        </BarChart>
       </ResponsiveContainer>
     </div>
   );

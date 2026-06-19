@@ -1,10 +1,8 @@
-import { asc, desc, eq, inArray } from 'drizzle-orm';
-import { db } from '@/lib/db/client';
-import { accounts, accountBalances } from '@/lib/db/schema';
-import { netWorth, netWorthTrend } from '@/lib/db/analytics';
+import { netWorth, netWorthTrend, accountBalancesNow } from '@/lib/db/analytics';
 import { buildBaseConverter } from '@/lib/fx';
 import { formatMoney } from '@/lib/money';
 import { recordBalance } from '@/app/admin/settings/actions';
+import { accounts } from '@/lib/db/schema';
 import StatCard from '@/components/admin/StatCard';
 import { NetWorthChart } from '@/components/admin/Charts';
 
@@ -13,27 +11,17 @@ export const dynamic = 'force-dynamic';
 const LIABILITY_TYPES = ['credit_card', 'loan', 'liability'];
 
 export default async function NetWorthPage() {
-  const [nw, trend, accts, conv] = await Promise.all([
+  const [nw, trend, balances, conv] = await Promise.all([
     netWorth(),
     netWorthTrend(12),
-    db.select().from(accounts).where(eq(accounts.isActive, true)).orderBy(asc(accounts.name)),
+    accountBalancesNow(),
     buildBaseConverter(),
   ]);
 
-  // latest snapshot per account for display — one query, newest-first, then
-  // pick the first row seen per account in memory.
-  const snaps = accts.length
-    ? await db
-        .select()
-        .from(accountBalances)
-        .where(inArray(accountBalances.accountId, accts.map((a) => a.id)))
-        .orderBy(desc(accountBalances.asOfDate))
-    : [];
-  const latest = new Map<number, number>();
-  for (const a of accts) {
-    const snap = snaps.find((s) => s.accountId === a.id);
-    latest.set(a.id, snap?.balance ?? a.openingBalance);
-  }
+  // Derived current balance per account (opening + transactions, re-anchored by
+  // any manual snapshot). Sorted by name for the tables and the form.
+  const accts = balances.map((b) => b.account).sort((a, b) => a.name.localeCompare(b.name));
+  const latest = new Map<number, number>(balances.map((b) => [b.account.id, b.balance]));
 
   const today = new Date().toISOString().slice(0, 10);
   const assetsAccts = accts.filter((a) => !LIABILITY_TYPES.includes(a.type));
@@ -65,9 +53,10 @@ export default async function NetWorthPage() {
       </section>
 
       <section className="adm-section adm-card">
-        <h2 className="adm-section-title">Record a balance</h2>
+        <h2 className="adm-section-title">Reconcile a balance</h2>
         <p className="adm-stat-sub" style={{ marginBottom: 12 }}>
-          Snapshot an account balance to build the trend (e.g. monthly).
+          Balances update automatically from your transactions. Record a snapshot
+          to re-anchor an account when it drifts from the real bank balance.
         </p>
         <form action={recordBalance} className="adm-form-row">
           <label className="adm-field">

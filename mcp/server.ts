@@ -7,21 +7,18 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { desc, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 import { db } from '@/lib/db/client';
 import {
   accounts,
   accountBalances,
   categories,
-  clients,
   fxRates,
-  invoices,
-  invoiceLineItems,
   transactions,
 } from '@/lib/db/schema';
 import { getTransactions, monthRange, type Scope } from '@/lib/db/queries';
-import { netWorth, cashFlow, pnlSeries, spendByCategory } from '@/lib/db/analytics';
+import { netWorth, cashFlow, spendByCategory } from '@/lib/db/analytics';
 import { getRate, fetchAndStoreLatest } from '@/lib/fx';
 import { majorToMinor, formatMoney } from '@/lib/money';
 
@@ -55,16 +52,6 @@ async function resolveCategory(ref: string, scope?: Scope) {
     pool.find((c) => c.id === byId) ??
     pool.find((c) => c.name.toLowerCase() === ref.toLowerCase()) ??
     pool.find((c) => c.name.toLowerCase().includes(ref.toLowerCase()))
-  );
-}
-
-async function resolveClient(ref: string) {
-  const all = await db.select().from(clients);
-  const byId = Number(ref);
-  return (
-    all.find((c) => c.id === byId) ??
-    all.find((c) => c.name.toLowerCase() === ref.toLowerCase()) ??
-    all.find((c) => c.name.toLowerCase().includes(ref.toLowerCase()))
   );
 }
 
@@ -166,13 +153,6 @@ server.tool(
 );
 
 server.tool(
-  'pnl',
-  'Business profit & loss series for the last N months (revenue, expenses, profit per month).',
-  { months: z.number().int().min(1).max(24).default(6) },
-  async ({ months }) => ok(await pnlSeries(months)),
-);
-
-server.tool(
   'spending_by_category',
   'Expense breakdown by category for a scope and month. monthOffset 0 = current.',
   { scope: SCOPE.default('personal'), monthOffset: z.number().int().optional() },
@@ -181,36 +161,6 @@ server.tool(
     const rows = await spendByCategory(scope, from, to);
     return ok({ period: label, scope, breakdown: rows });
   },
-);
-
-server.tool(
-  'list_invoices',
-  'List invoices, optionally filtered by status (draft/sent/paid/overdue).',
-  { status: z.enum(['draft', 'sent', 'paid', 'overdue']).optional() },
-  async ({ status }) => {
-    const rows = await db
-      .select({
-        id: invoices.id,
-        number: invoices.number,
-        clientName: clients.name,
-        issueDate: invoices.issueDate,
-        dueDate: invoices.dueDate,
-        status: invoices.status,
-        currency: invoices.currency,
-        total: invoices.total,
-      })
-      .from(invoices)
-      .leftJoin(clients, eq(invoices.clientId, clients.id))
-      .orderBy(desc(invoices.issueDate));
-    const filtered = status ? rows.filter((r) => r.status === status) : rows;
-    return ok(
-      filtered.map((r) => ({ ...r, total: formatMoney(r.total, r.currency) })),
-    );
-  },
-);
-
-server.tool('list_clients', 'List all clients.', {}, async () =>
-  ok(await db.select().from(clients)),
 );
 
 server.tool(
@@ -341,7 +291,7 @@ server.tool(
 
 server.tool(
   'record_balance',
-  'Snapshot an account balance on a date (feeds the net-worth trend). account = name or id.',
+  'Reconcile an account to a known balance on a date. Balances are otherwise derived from opening balance + transactions; this snapshot re-anchors them when they drift from the real bank balance. account = name or id.',
   { account: z.string(), date: z.string(), balance: z.number() },
   async ({ account, date, balance }) => {
     const acct = await resolveAccount(account);
@@ -368,88 +318,6 @@ server.tool(
       .values({ name: a.name, kind: a.kind, scope: a.scope, color: a.color ?? '#1f9d57' })
       .returning({ id: categories.id });
     return ok({ created: row.id, name: a.name });
-  },
-);
-
-server.tool(
-  'create_client',
-  'Create a client for invoicing.',
-  { name: z.string(), email: z.string().optional(), currency: CURRENCY.default('USD'), notes: z.string().optional() },
-  async (a) => {
-    const [row] = await db
-      .insert(clients)
-      .values({ name: a.name, email: a.email ?? null, currency: a.currency, notes: a.notes ?? null })
-      .returning({ id: clients.id });
-    return ok({ created: row.id, name: a.name });
-  },
-);
-
-server.tool(
-  'create_invoice',
-  'Create an invoice with line items. client = name or id. Dates YYYY-MM-DD. taxPct optional. Currency follows the client. items: [{description, qty, unitPrice}] (unitPrice in major units).',
-  {
-    client: z.string(),
-    number: z.string(),
-    issueDate: z.string(),
-    dueDate: z.string(),
-    status: z.enum(['draft', 'sent', 'paid']).default('sent'),
-    taxPct: z.number().min(0).default(0),
-    notes: z.string().optional(),
-    items: z
-      .array(z.object({ description: z.string(), qty: z.number().positive(), unitPrice: z.number().nonnegative() }))
-      .min(1),
-  },
-  async (a) => {
-    const client = await resolveClient(a.client);
-    if (!client) return fail(`No client matched "${a.client}". Use list_clients or create_client.`);
-    const lines = a.items.map((i) => {
-      const unit = majorToMinor(i.unitPrice, client.currency);
-      return { description: i.description, qty: i.qty, unitPrice: unit, amount: unit * i.qty };
-    });
-    const subtotal = lines.reduce((s, l) => s + l.amount, 0);
-    const tax = Math.round((subtotal * a.taxPct) / 100);
-    const total = subtotal + tax;
-    try {
-      const id = await db.transaction(async (tx) => {
-        const [inv] = await tx
-          .insert(invoices)
-          .values({
-            clientId: client.id,
-            number: a.number,
-            issueDate: a.issueDate,
-            dueDate: a.dueDate,
-            status: a.status,
-            currency: client.currency,
-            subtotal,
-            tax,
-            total,
-            paidDate: a.status === 'paid' ? a.issueDate : null,
-            notes: a.notes ?? null,
-          })
-          .returning({ id: invoices.id });
-        await tx.insert(invoiceLineItems).values(lines.map((l) => ({ ...l, invoiceId: inv.id })));
-        return inv.id;
-      });
-      return ok({ created: id, number: a.number, total: formatMoney(total, client.currency) });
-    } catch {
-      return fail('Could not create invoice — is the invoice number unique?');
-    }
-  },
-);
-
-server.tool(
-  'mark_invoice_paid',
-  'Mark an invoice paid by id or number.',
-  { invoice: z.string() },
-  async ({ invoice }) => {
-    const all = await db.select().from(invoices);
-    const byId = Number(invoice);
-    const inv =
-      all.find((i) => i.id === byId) ?? all.find((i) => i.number.toLowerCase() === invoice.toLowerCase());
-    if (!inv) return fail(`No invoice matched "${invoice}".`);
-    const today = new Date().toISOString().slice(0, 10);
-    await db.update(invoices).set({ status: 'paid', paidDate: today }).where(eq(invoices.id, inv.id));
-    return ok({ invoice: inv.number, status: 'paid', paidDate: today });
   },
 );
 

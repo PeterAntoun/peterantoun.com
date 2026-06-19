@@ -8,8 +8,6 @@ const NAV: { href: string; label: string; group?: string }[] = [
   { href: '/admin', label: 'Overview' },
   { href: '/admin/net-worth', label: 'Net worth', group: 'Personal' },
   { href: '/admin/cash-flow', label: 'Cash flow', group: 'Personal' },
-  { href: '/admin/business/pnl', label: 'P&L', group: 'Business' },
-  { href: '/admin/business/invoices', label: 'Invoices & clients', group: 'Business' },
   { href: '/admin/transactions', label: 'Transactions', group: 'Ledger' },
   { href: '/admin/settings', label: 'Settings', group: 'System' },
 ];
