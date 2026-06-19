@@ -12,9 +12,12 @@
     "lint": "next lint",
     "db:generate": "node --env-file=.env.local node_modules/.bin/drizzle-kit generate",
     "db:push": "node --env-file=.env.local node_modules/.bin/drizzle-kit push",
-    "db:studio": "node --env-file=.env.local node_modules/.bin/drizzle-kit studio"
+    "db:studio": "node --env-file=.env.local node_modules/.bin/drizzle-kit studio",
+    "mcp:build": "esbuild mcp/server.ts --bundle --platform=node --format=cjs --outfile=mcp/dist/server.cjs --tsconfig=tsconfig.json",
+    "mcp:dev": "node --env-file=.env.local mcp/dist/server.cjs"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
     "jose": "^6.2.3",
@@ -37,6 +40,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "drizzle-kit": "^0.31.10",
+    "esbuild": "^0.28.1",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.35",
     "postcss": "^8.4.40",

@@ -142,3 +142,6 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# MCP server build artifact (run `npm run mcp:build`)
+mcp/dist/

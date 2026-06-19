@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "finance": {
+      "command": "node",
+      "args": ["--env-file=.env.local", "mcp/dist/server.cjs"]
+    }
+  }
+}
