@@ -1,0 +1,427 @@
+/* ============================================================
+   Finance dashboard (/admin) — reuses the global tokens defined
+   in app/globals.css (--bg, --ink, --accent, fonts, etc.).
+   ============================================================ */
+
+.adm-root {
+  display: grid;
+  grid-template-columns: 248px 1fr;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--display);
+}
+
+/* ---- sidebar ---------------------------------------------- */
+.adm-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px 16px;
+  border-right: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.adm-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-size: 18px;
+  padding: 4px 8px;
+}
+.adm-brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+.adm-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  overflow-y: auto;
+}
+.adm-nav-group {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--faint);
+  margin: 16px 8px 6px;
+}
+.adm-nav-link {
+  display: block;
+  padding: 8px 10px;
+  border-radius: var(--r);
+  color: var(--ink-soft);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.adm-nav-link:hover {
+  background: var(--bg);
+  color: var(--ink);
+}
+.adm-nav-link.is-active {
+  background: var(--ink);
+  color: var(--bg);
+}
+.adm-sidebar-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+.adm-user {
+  font-size: 12px;
+  color: var(--mid);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 8px;
+}
+.adm-logout {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.adm-logout:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+/* ---- main ------------------------------------------------- */
+.adm-main {
+  padding: 32px clamp(20px, 4vw, 48px);
+  max-width: 1280px;
+  width: 100%;
+}
+.adm-page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.adm-page-title {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.adm-page-sub {
+  color: var(--mid);
+  font-size: 14px;
+  margin: 4px 0 0;
+}
+
+/* ---- stat cards ------------------------------------------- */
+.adm-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.adm-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+.adm-stat-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--mid);
+  margin: 0 0 8px;
+}
+.adm-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.adm-stat-sub {
+  font-size: 13px;
+  color: var(--mid);
+  margin-top: 6px;
+}
+.adm-pos {
+  color: var(--accent);
+}
+.adm-neg {
+  color: #c0492b;
+}
+
+/* ---- section / chart card --------------------------------- */
+.adm-section {
+  margin-bottom: 28px;
+}
+.adm-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 14px;
+}
+.adm-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+.adm-chart {
+  width: 100%;
+  height: 280px;
+}
+
+/* ---- tables ----------------------------------------------- */
+.adm-table-wrap {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg-2);
+}
+.adm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.adm-table th {
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mid);
+  font-weight: 500;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+.adm-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+.adm-table tr:last-child td {
+  border-bottom: none;
+}
+.adm-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--mono);
+}
+.adm-empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--mid);
+  font-size: 14px;
+}
+
+/* ---- badges ----------------------------------------------- */
+.adm-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.adm-badge.draft { background: var(--line); color: var(--mid); }
+.adm-badge.sent { background: #e3edf7; color: #2f6b8f; }
+.adm-badge.paid { background: #e2f3e8; color: #1f7d47; }
+.adm-badge.overdue { background: #f7e3e3; color: #b4392a; }
+
+/* ---- forms / buttons -------------------------------------- */
+.adm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: var(--r);
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.adm-btn:hover { opacity: 0.85; }
+.adm-btn.ghost {
+  background: transparent;
+  color: var(--ink);
+}
+.adm-btn:disabled { opacity: 0.5; cursor: default; }
+
+.adm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+.adm-input,
+.adm-select {
+  padding: 9px 11px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+}
+.adm-input:focus,
+.adm-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.adm-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+.adm-error {
+  color: #c0492b;
+  font-size: 13px;
+}
+.adm-ok {
+  color: var(--accent);
+  font-size: 13px;
+}
+
+/* ============================================================
+   Auth pages (login / setup) — bare shell, centered card
+   ============================================================ */
+.adm-auth-root { min-height: 100vh; background: var(--bg); color: var(--ink); }
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  font-family: var(--display);
+}
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 32px;
+}
+.auth-kicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin: 0 0 8px;
+}
+.auth-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+}
+.auth-sub { color: var(--mid); font-size: 14px; margin: 0 0 24px; }
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+.auth-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.auth-hint { color: var(--faint); font-weight: 400; }
+.auth-input {
+  padding: 10px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+}
+.auth-input:focus { outline: none; border-color: var(--accent); }
+.auth-totp {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+}
+.auth-qr {
+  background: #fff;
+  padding: 8px;
+  border-radius: 6px;
+  line-height: 0;
+}
+.auth-totp-help { font-size: 12px; color: var(--mid); }
+.auth-secret { margin-top: 8px; word-break: break-all; }
+.auth-secret code { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); }
+.auth-btn {
+  margin-top: 4px;
+  padding: 11px 16px;
+  border: none;
+  border-radius: var(--r);
+  background: var(--ink);
+  color: var(--bg);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.auth-btn:disabled { opacity: 0.5; cursor: default; }
+.auth-error {
+  color: #c0492b;
+  font-size: 13px;
+  margin: 0;
+}
+
+/* ---- responsive ------------------------------------------- */
+@media (max-width: 820px) {
+  .adm-root { grid-template-columns: 1fr; }
+  .adm-sidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .adm-nav { flex-direction: row; flex-wrap: wrap; overflow: visible; }
+  .adm-nav-group { display: none; }
+  .adm-sidebar-foot {
+    flex-direction: row;
+    align-items: center;
+    border-top: none;
+    padding-top: 0;
+    margin-left: auto;
+  }
+  /* keep multi-column tables readable — scroll horizontally instead of squashing */
+  .adm-table { min-width: 560px; }
+  .adm-main { padding: 20px 16px; }
+}
