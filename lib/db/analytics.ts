@@ -2,7 +2,7 @@
    we fetch rows and aggregate in JS (clear, currency-aware via the base
    converter) rather than pushing FX math into SQL. Server-only. */
 
-import { and, desc, eq, gte, lte, ne } from 'drizzle-orm';
+import { and, desc, eq, gte, inArray, lte, ne } from 'drizzle-orm';
 import { db } from './client';
 import { accounts, accountBalances, categories, transactions } from './schema';
 import { buildBaseConverter } from '@/lib/fx';
@@ -10,49 +10,58 @@ import { monthRange, type Scope } from './queries';
 
 const LIABILITY_TYPES = new Set(['credit_card', 'loan', 'liability']);
 
-/** Latest known balance per account as of `date` (inclusive); falls back to the
-    account opening balance when no snapshot exists. Returns minor units in the
-    account's own currency, tagged with currency + whether it's a liability. */
-async function balancesAsOf(date?: string) {
-  const accts = await db.select().from(accounts).where(eq(accounts.isActive, true));
-  const out: { balance: number; currency: string; liability: boolean }[] = [];
+type Acct = typeof accounts.$inferSelect;
+type Snapshot = typeof accountBalances.$inferSelect;
 
-  for (const a of accts) {
-    const snaps = await db
-      .select()
-      .from(accountBalances)
-      .where(
-        date
-          ? and(eq(accountBalances.accountId, a.id), lte(accountBalances.asOfDate, date))
-          : eq(accountBalances.accountId, a.id),
-      )
-      .orderBy(desc(accountBalances.asOfDate))
-      .limit(1);
-    const balance = snaps[0]?.balance ?? a.openingBalance;
-    out.push({ balance, currency: a.currency, liability: LIABILITY_TYPES.has(a.type) });
-  }
-  return out;
+/** Load every active account and all of its balance snapshots in two queries
+    (snapshots sorted newest-first). Callers then derive any as-of-date balance
+    in memory — volumes are small and this avoids an N+1 over the network. */
+async function loadBalanceData(): Promise<{ accts: Acct[]; snaps: Snapshot[] }> {
+  const accts = await db.select().from(accounts).where(eq(accounts.isActive, true));
+  if (accts.length === 0) return { accts, snaps: [] };
+  const snaps = await db
+    .select()
+    .from(accountBalances)
+    .where(inArray(accountBalances.accountId, accts.map((a) => a.id)))
+    .orderBy(desc(accountBalances.asOfDate));
+  return { accts, snaps };
 }
 
-export async function netWorth(date?: string) {
-  const conv = await buildBaseConverter();
-  const rows = await balancesAsOf(date);
+/** Latest snapshot balance for an account as of `date` (inclusive), falling back
+    to the opening balance. `snaps` must be sorted newest-first. */
+function balanceAsOf(a: Acct, snaps: Snapshot[], date?: string): number {
+  for (const s of snaps) {
+    if (s.accountId !== a.id) continue;
+    if (!date || s.asOfDate <= date) return s.balance;
+  }
+  return a.openingBalance;
+}
+
+type Converter = Awaited<ReturnType<typeof buildBaseConverter>>;
+
+function computeNetWorth(accts: Acct[], snaps: Snapshot[], conv: Converter, date?: string) {
   let assets = 0;
   let liabilities = 0;
-  for (const r of rows) {
-    const v = conv.toBase(r.balance, r.currency);
-    if (r.liability) liabilities += v;
+  for (const a of accts) {
+    const v = conv.toBase(balanceAsOf(a, snaps, date), a.currency);
+    if (LIABILITY_TYPES.has(a.type)) liabilities += v;
     else assets += v;
   }
   return { assets, liabilities, net: assets - liabilities, base: conv.base, missing: conv.missing };
 }
 
+export async function netWorth(date?: string) {
+  const [conv, { accts, snaps }] = await Promise.all([buildBaseConverter(), loadBalanceData()]);
+  return computeNetWorth(accts, snaps, conv, date);
+}
+
 export async function netWorthTrend(months = 12) {
+  // Load accounts + snapshots once, then derive each month-end in memory.
+  const [conv, { accts, snaps }] = await Promise.all([buildBaseConverter(), loadBalanceData()]);
   const points: { label: string; value: number }[] = [];
   for (let i = months - 1; i >= 0; i--) {
     const { to, label } = monthRange(-i);
-    const nw = await netWorth(to);
-    points.push({ label, value: nw.net / 100 });
+    points.push({ label, value: computeNetWorth(accts, snaps, conv, to).net / 100 });
   }
   return points;
 }
@@ -114,15 +123,40 @@ export async function spendByCategory(scope: Scope, from: string, to: string) {
   return Array.from(map.values()).sort((a, b) => b.value - a.value);
 }
 
-/** Monthly income/expense series for charts (major units, base currency). */
+/** Monthly income/expense series for charts (major units, base currency).
+    Fetches the whole window in one query and buckets by month in memory. */
 export async function monthlySeries(scope: Scope, months = 6) {
-  const out: { label: string; income: number; expense: number }[] = [];
-  for (let i = months - 1; i >= 0; i--) {
-    const { from, to, label } = monthRange(-i);
-    const cf = await cashFlow(scope, from, to);
-    out.push({ label, income: cf.income / 100, expense: cf.expense / 100 });
+  const buckets = Array.from({ length: months }, (_, i) => {
+    const { from, to, label } = monthRange(-(months - 1 - i));
+    return { from, to, label, income: 0, expense: 0 };
+  });
+
+  const conv = await buildBaseConverter();
+  const rows = await db
+    .select()
+    .from(transactions)
+    .where(
+      and(
+        eq(transactions.scope, scope),
+        ne(transactions.type, 'transfer'),
+        gte(transactions.date, buckets[0].from),
+        lte(transactions.date, buckets[buckets.length - 1].to),
+      ),
+    );
+
+  for (const t of rows) {
+    const b = buckets.find((b) => t.date >= b.from && t.date <= b.to);
+    if (!b) continue;
+    const v = conv.toBase(t.amount, t.currency);
+    if (v >= 0) b.income += v;
+    else b.expense += -v;
   }
-  return out;
+
+  return buckets.map((b) => ({
+    label: b.label,
+    income: b.income / 100,
+    expense: b.expense / 100,
+  }));
 }
 
 /** Business P&L per month (major units, base currency). */

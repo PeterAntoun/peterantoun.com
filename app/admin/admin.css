@@ -425,3 +425,26 @@
   .adm-table { min-width: 560px; }
   .adm-main { padding: 20px 16px; }
 }
+
+/* ---- loading skeleton (route transition feedback) --------- */
+.adm-skel {
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--bg-2) 0%,
+    var(--line) 50%,
+    var(--bg-2) 100%
+  );
+  background-size: 200% 100%;
+  animation: adm-shimmer 1.2s ease-in-out infinite;
+}
+@keyframes adm-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.adm-skel-line { height: 12px; }
+.adm-skel-card { height: 96px; }
+.adm-skel-chart { height: 280px; }
+@media (prefers-reduced-motion: reduce) {
+  .adm-skel { animation: none; }
+}

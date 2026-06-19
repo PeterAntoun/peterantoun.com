@@ -1,4 +1,4 @@
-import { asc, desc, eq } from 'drizzle-orm';
+import { asc, desc, eq, inArray } from 'drizzle-orm';
 import { db } from '@/lib/db/client';
 import { accounts, accountBalances } from '@/lib/db/schema';
 import { netWorth, netWorthTrend } from '@/lib/db/analytics';
@@ -20,15 +20,18 @@ export default async function NetWorthPage() {
     buildBaseConverter(),
   ]);
 
-  // latest snapshot per account for display
+  // latest snapshot per account for display — one query, newest-first, then
+  // pick the first row seen per account in memory.
+  const snaps = accts.length
+    ? await db
+        .select()
+        .from(accountBalances)
+        .where(inArray(accountBalances.accountId, accts.map((a) => a.id)))
+        .orderBy(desc(accountBalances.asOfDate))
+    : [];
   const latest = new Map<number, number>();
   for (const a of accts) {
-    const [snap] = await db
-      .select()
-      .from(accountBalances)
-      .where(eq(accountBalances.accountId, a.id))
-      .orderBy(desc(accountBalances.asOfDate))
-      .limit(1);
+    const snap = snaps.find((s) => s.accountId === a.id);
     latest.set(a.id, snap?.balance ?? a.openingBalance);
   }
 

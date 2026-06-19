@@ -3,15 +3,16 @@
    frankfurter.app. Manual overrides in Settings are stored with source='manual'
    and win for their date because we read the most recent row. */
 
+import { cache } from 'react';
 import { and, desc, eq } from 'drizzle-orm';
 import { db } from '@/lib/db/client';
 import { fxRates, settings } from '@/lib/db/schema';
 import { convertMinor, SUPPORTED_CURRENCIES } from '@/lib/money';
 
-export async function getBaseCurrency(): Promise<string> {
+export const getBaseCurrency = cache(async function getBaseCurrency(): Promise<string> {
   const [row] = await db.select().from(settings).limit(1);
   return row?.baseCurrency ?? process.env.BASE_CURRENCY ?? 'USD';
-}
+});
 
 /** Most recent known rate to convert `from` -> `to` (1 if same; inverts a
     stored opposite-direction rate when needed). Returns null if unknown. */
@@ -41,7 +42,7 @@ export async function getRate(from: string, to: string): Promise<number | null> 
 
 /** Build a converter to the base currency over all supported currencies.
     Pre-loads rates once so callers can convert many transactions cheaply. */
-export async function buildBaseConverter(): Promise<{
+export const buildBaseConverter = cache(async function buildBaseConverter(): Promise<{
   base: string;
   toBase: (minor: number, currency: string) => number;
   missing: string[];
@@ -50,12 +51,14 @@ export async function buildBaseConverter(): Promise<{
   const rates: Record<string, number> = { [base]: 1 };
   const missing: string[] = [];
 
-  for (const cur of SUPPORTED_CURRENCIES) {
-    if (cur === base) continue;
-    const r = await getRate(cur, base);
+  // Look up every non-base currency's rate in parallel rather than serially.
+  const others = SUPPORTED_CURRENCIES.filter((cur) => cur !== base);
+  const resolved = await Promise.all(others.map((cur) => getRate(cur, base)));
+  others.forEach((cur, i) => {
+    const r = resolved[i];
     if (r == null) missing.push(cur);
     else rates[cur] = r;
-  }
+  });
 
   return {
     base,
@@ -66,7 +69,7 @@ export async function buildBaseConverter(): Promise<{
       return convertMinor(minor, currency, base, rate);
     },
   };
-}
+});
 
 /* ---- cron: fetch latest USD/EUR from frankfurter.app ------ */
 export async function fetchAndStoreLatest(): Promise<
