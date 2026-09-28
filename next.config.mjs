@@ -57,6 +57,10 @@ const nextConfig = {
     // Tree-shake icon/animation barrels so only used exports ship to the client.
     optimizePackageImports: ['framer-motion'],
   },
+  // Standalone animated intro reel lives at public/intro.html; serve it at /intro.
+  async rewrites() {
+    return [{ source: '/intro', destination: '/intro.html' }];
+  },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
   },
